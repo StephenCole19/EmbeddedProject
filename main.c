@@ -100,11 +100,40 @@ IFS0bits.T1IF = 0;
 T1CONbits.TON = 1;
 */
 
+//Green LED     CS_1
+//Red LED       CS_2
+//Push Button   INT_1
+//Analog Stick  INT_2
 
-int main(void) {
+
+int main(void) 
+{
     CLKDIVbits.FRCDIV = 1; // Divide FRC by 2
     
     return 0;
+}
+
+// If return == 1, PushButtonEvent
+// If return == 2, AnalogStickEvent
+// If return == 3, Microphone
+// *Should* be return == -1 if no current event
+int CheckEventType()
+{
+    int ret = -1;
+    if(PORTCbits.RC14 == 0) //Push Button clicked INT_1
+    {
+        ret = 1;
+    }
+    else if(PORTBbits.RB14 == 0) //AnalogStick clicked INT_2
+    {
+        ret = 2;
+    }
+    else //Microphone type event
+    {
+        ret = 3;
+    }
+    
+    return ret;
 }
 
 // Timer1 Interrupt
