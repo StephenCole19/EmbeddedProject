@@ -105,6 +105,7 @@ T1CONbits.TON = 1;
 //Push Button   INT_1
 //Analog Stick  INT_2
 
+int currentEvent  = -1;
 
 int main(void) 
 {
@@ -124,25 +125,17 @@ int main(void)
     return 0;
 }
 
-// If return == 1, PushButtonEvent
-// If return == 2, AnalogStickEvent
-// If return == 3, Microphone
-// *Should* be return == -1 if no current event
-int CheckEventType()
+/*
+ * Return 1 if the userEvent == currentEvent,
+ * else return 0
+ */
+int checkEventType(int userEvent)
 {
-    int ret = -1;
-    if(PORTCbits.RC14 == 0) //Push Button clicked INT_1
-    {
+    int ret;
+    if(userEvent == currentEvent)
         ret = 1;
-    }
-    else if(PORTBbits.RB14 == 0) //AnalogStick clicked INT_2
-    {
-        ret = 2;
-    }
-    else //Microphone type event
-    {
-        ret = 3;
-    }
+    else
+        ret = 0;
     
     return ret;
 }
