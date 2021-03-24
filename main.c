@@ -122,17 +122,18 @@ int main(void)
     while (1) 
     {
         if (PORTCbits.RC0 == 0) 
-        {     //if switch is on
+        {     
+            //if switch is on
             //put all code in here
             
             humanInteractionListener();
             currentActionUpdater();
         }
-         else {
-            scoreHandler(0);   //reset score
-            level = 1;          //reset level
+        else {
+            scoreHandler(0);        //reset score
+            level = 1;              //reset level
             //turn off all outputs
-            LATBbits.LATB2 = 0;     // Turn off green LED
+            LATBbits.LATB2 = 0;     //Turn off green LED
             LATCbits.LATC3 = 0;     //Turn off red LED
             //turn off 7 seg
             
@@ -211,7 +212,12 @@ void scoreHandler(int result)
     if(result == 1)
     {
         score++;
+        if(score % 5 == 0)
+        {
+            level++;
+        }
         //Increment and keep going
+        //Every 5 levels speedup
     }
     else if(result == 0)
     {
