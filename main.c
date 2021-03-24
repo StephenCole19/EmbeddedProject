@@ -109,6 +109,7 @@ T1CONbits.TON = 1;
 
 
 int currentEvent  = -1;
+int score = 0;
 
 
 int main(void) 
@@ -125,7 +126,6 @@ int main(void)
             //currentActionUpdater();
         }
     }
-        `
     return 0;
 }
 
@@ -179,6 +179,14 @@ void currentActionUpdater(){
     currentEvent = rand() % 3;
 }
 
+void successHandler(){
+    currentActionUpdater();
+    scoreHandler(1);
+}
+
+void failureHandler(){
+    scoreHandler(0);
+}
 // Timer1 Interrupt
 void __attribute__((__interrupt__,no_auto_psv)) _T1Interrupt(void)
 {
