@@ -128,10 +128,6 @@ int main(void)
             currentActionUpdater();
         }
     }
-<<<<<<< HEAD
-=======
-
->>>>>>> 9bdbeed48bcabad307f1381b613dc0e4a99536d6
     return 0;
 }
 
