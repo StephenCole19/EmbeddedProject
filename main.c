@@ -83,6 +83,8 @@
 
 #include "xc.h"
 #include <time.h>
+#include <stdio.h>
+#include <stdlib.h>
 #define FCY 2000000UL
 #define FOSC 4000000UL // FRC divided by 2 from 8MHz to 4MHz
 #include <libpic30.h>
@@ -106,6 +108,9 @@ T1CONbits.TON = 1;
 //Analog Stick  INT_2
 
 
+int currentEvent  = -1;
+
+
 int main(void) 
 {
     CLKDIVbits.FRCDIV = 1; // Divide FRC by 2
@@ -116,33 +121,25 @@ int main(void)
         if (PORTCbits.RC0 == 0) {     //if switch is on
             //put all code in here
             
-            humanInteractionListner();
-            currentActionUpdater();
+            humanInteractionListener();
+            //currentActionUpdater();
         }
     }
         `
     return 0;
 }
 
-// If return == 1, PushButtonEvent
-// If return == 2, AnalogStickEvent
-// If return == 3, Microphone
-// *Should* be return == -1 if no current event
-int CheckEventType()
+/*
+ * Return 1 if the userEvent == currentEvent,
+ * else return 0
+ */
+int checkEventType(int userEvent)
 {
-    int ret = -1;
-    if(PORTCbits.RC14 == 0) //Push Button clicked INT_1
-    {
+    int ret;
+    if(userEvent == currentEvent)
         ret = 1;
-    }
-    else if(PORTBbits.RB14 == 0) //AnalogStick clicked INT_2
-    {
-        ret = 2;
-    }
-    else //Microphone type event
-    {
-        ret = 3;
-    }
+    else
+        ret = 0;
     
     return ret;
 }
@@ -150,22 +147,38 @@ int CheckEventType()
 void humanInteractionListener(){
     int listening = 1; 
     int eventType = 0; 
+    int result = 0; // 1 == pass, 0 == fail
+    
     while(listening){
-        if(PORTbits.RC14 == 0){ //push button has been clicked
+        if(PORTCbits.RC14 == 0)
+        { //push button has been clicked
             listening = 0; //stop listening
-            eventTypeChecker(1);
+            result = checkEventType(1);
         }
-        if(PORTBbits.RB14 == 0){
+        if(PORTBbits.RB14 == 0)
+        {
             listening = 0; //stop listening 
-            eventTypeChecker(2);
+            result = checkEventType(2);
         }
-        if(/* mic has been detected??*/){
+        if(0) /* mic has been detected??*/
+        {
             listening = 0; 
-            eventTypeChecker(3); 
-           
+            result = checkEventType(3); 
         }
     }
 }
+
+// updates the global variable currentEvent when called
+// generates a random number and assigns it to the variable
+// 1 = push button
+// 2 = analog stick
+// 3 = mic
+void currentActionUpdater(){
+    time_t t;
+    srand((unsigned) time(&t));
+    currentEvent = rand() % 3;
+}
+
 // Timer1 Interrupt
 void __attribute__((__interrupt__,no_auto_psv)) _T1Interrupt(void)
 {
