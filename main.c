@@ -153,16 +153,15 @@ void humanInteractionListener(){
     while(listening){
         if(PORTbits.RC14 == 0){ //push button has been clicked
             listening = 0; //stop listening
-            eventTypeChecker(1);
+            checkEventType(1);
         }
         if(PORTBbits.RB14 == 0){
             listening = 0; //stop listening 
-            eventTypeChecker(2);
+            checkEventType(2);
         }
         if(/* mic has been detected??*/){
             listening = 0; 
-            eventTypeChecker(3); 
-           
+            checkEventType(3); 
         }
     }
 }
