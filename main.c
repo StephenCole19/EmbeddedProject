@@ -85,9 +85,9 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <libpic30.h>
 #define FCY 2000000UL
 #define FOSC 4000000UL // FRC divided by 2 from 8MHz to 4MHz
-#include <libpic30.h>
 
 /*
 clock stuff
@@ -117,12 +117,14 @@ int main(void)
     
     TRISCbits.TRISC0 = 1;  //C0 is input (on/off switch)
     
-    while (1) {
-        if (PORTCbits.RC0 == 0) {     //if switch is on
+    while (1) 
+    {
+        if (PORTCbits.RC0 == 0) 
+        {     //if switch is on
             //put all code in here
             
             humanInteractionListener();
-            //currentActionUpdater();
+            currentActionUpdater();
         }
     }
     
@@ -136,6 +138,7 @@ int main(void)
 int checkEventType(int userEvent)
 {
     int ret;
+    printf("%d\n", currentEvent);
     if(userEvent == currentEvent)
         ret = 1;
     else
@@ -144,7 +147,8 @@ int checkEventType(int userEvent)
     return ret;
 }
 
-void humanInteractionListener(){
+void humanInteractionListener()
+{
     int listening = 1; 
     int eventType = 0; 
     int result = 0; // 1 == pass, 0 == fail
@@ -173,9 +177,8 @@ void humanInteractionListener(){
 // 1 = push button
 // 2 = analog stick
 // 3 = mic
-void currentActionUpdater(){
-    time_t t;
-    srand((unsigned) time(&t));
+void currentActionUpdater()
+{
     currentEvent = rand() % 3;
 }
 
