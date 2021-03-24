@@ -127,7 +127,7 @@ int main(void)
             currentActionUpdater();
         }
     }
-    
+        `
     return 0;
 }
 
@@ -177,8 +177,10 @@ void humanInteractionListener()
 // 1 = push button
 // 2 = analog stick
 // 3 = mic
-void currentActionUpdater()
-{
+
+void currentActionUpdater(){
+//    time_t t;
+//    srand((unsigned) time(&t));
     currentEvent = rand() % 3;
 }
 
