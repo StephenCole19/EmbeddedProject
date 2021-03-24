@@ -110,6 +110,17 @@ int main(void)
 {
     CLKDIVbits.FRCDIV = 1; // Divide FRC by 2
     
+    TRISCbits.TRISC0 = 1;  //C0 is input (on/off switch)
+    
+    while (1) {
+        if (PORTCbits.RC0 == 0) {     //if switch is on
+            //put all code in here
+            
+            humanInteractionListner();
+            currentActionUpdater();
+        }
+    }
+    
     return 0;
 }
 
@@ -136,6 +147,25 @@ int CheckEventType()
     return ret;
 }
 
+void humanInteractionListener(){
+    int listening = 1; 
+    int eventType = 0; 
+    while(listening){
+        if(PORTbits.RC14 == 0){ //push button has been clicked
+            listening = 0; //stop listening
+            eventTypeChecker(1);
+        }
+        if(PORTBbits.RB14 == 0){
+            listening = 0; //stop listening 
+            eventTypeChecker(2);
+        }
+        if(/* mic has been detected??*/){
+            listening = 0; 
+            eventTypeChecker(3); 
+           
+        }
+    }
+}
 // Timer1 Interrupt
 void __attribute__((__interrupt__,no_auto_psv)) _T1Interrupt(void)
 {
