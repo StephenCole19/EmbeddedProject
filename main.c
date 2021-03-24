@@ -128,10 +128,7 @@ int main(void)
             currentActionUpdater();
         }
     }
-<<<<<<< HEAD
-=======
-
->>>>>>> 9bdbeed48bcabad307f1381b613dc0e4a99536d6
+    
     return 0;
 }
 
@@ -142,7 +139,6 @@ int main(void)
 int checkEventType(int userEvent)
 {
     int ret;
-    printf("%d\n", currentEvent);
     if(userEvent == currentEvent)
         ret = 1;
     else
@@ -182,19 +178,36 @@ void humanInteractionListener()
 // 2 = analog stick
 // 3 = mic
 
-void currentActionUpdater(){
+void currentActionUpdater()
+{
 //    time_t t;
 //    srand((unsigned) time(&t));
     currentEvent = rand() % 3;
 }
 
-void successHandler(){
+void successHandler()
+{
     currentActionUpdater();
     scoreHandler(1);
 }
 
-void failureHandler(){
+void failureHandler()
+{
     scoreHandler(0);
+}
+
+void scoreHandler(int result)
+{
+    if(result == 1)
+    {
+        score++;
+        //Increment and keep going
+    }
+    else if(result == 0)
+    {
+        score = 0;
+        //Reset score and tell game to stop
+    }
 }
 // Timer1 Interrupt
 void __attribute__((__interrupt__,no_auto_psv)) _T1Interrupt(void)
