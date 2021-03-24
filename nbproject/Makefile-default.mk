@@ -95,14 +95,22 @@ MP_LINKER_FILE_OPTION=,--script=p33CK128MP506.gld
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: compile
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
+<<<<<<< HEAD
 ${OBJECTDIR}/main.o: main.c  .generated_files/2154182d2e42182c7890be35a6867be1c5421ab8.flag .generated_files/d698de772bfe72115858c985878dd5dfedfd52a1.flag
+=======
+${OBJECTDIR}/main.o: main.c  .generated_files/5a90a234678d4e8b47e212784d1b9992b8439a3f.flag .generated_files/cdcbca7568301a43ece45bab4391310f72cfb27b.flag
+>>>>>>> 1c223b108610bbf810304fa87f699c5f2b16468b
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/main.o.d 
 	@${RM} ${OBJECTDIR}/main.o 
 	${MP_CC} $(MP_EXTRA_CC_PRE)  main.c  -o ${OBJECTDIR}/main.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MP -MMD -MF "${OBJECTDIR}/main.o.d"      -g -D__DEBUG   -mno-eds-warn  -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -O0 -msmart-io=1 -Wall -msfr-warn=off    -mdfp="${DFP_DIR}/xc16"
 	
 else
+<<<<<<< HEAD
 ${OBJECTDIR}/main.o: main.c  .generated_files/651bd998e4dff7cbda6cad459769ee39b8459062.flag .generated_files/d698de772bfe72115858c985878dd5dfedfd52a1.flag
+=======
+${OBJECTDIR}/main.o: main.c  .generated_files/c78b239c86ec050a5549dd61b086fab896fb008f.flag .generated_files/cdcbca7568301a43ece45bab4391310f72cfb27b.flag
+>>>>>>> 1c223b108610bbf810304fa87f699c5f2b16468b
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/main.o.d 
 	@${RM} ${OBJECTDIR}/main.o 
@@ -133,7 +141,11 @@ else
 dist/${CND_CONF}/${IMAGE_TYPE}/EmbeddedProject.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk   
 	@${MKDIR} dist/${CND_CONF}/${IMAGE_TYPE} 
 	${MP_CC} $(MP_EXTRA_LD_PRE)  -o dist/${CND_CONF}/${IMAGE_TYPE}/EmbeddedProject.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}      -mcpu=$(MP_PROCESSOR_OPTION)        -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -Wl,--local-stack,,--defsym=__MPLAB_BUILD=1,$(MP_LINKER_FILE_OPTION),--stack=16,--check-sections,--data-init,--pack-data,--handles,--isr,--no-gc-sections,--fill-upper=0,--stackguard=16,--no-force-link,--smart-io,-Map="${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map",--report-mem,--memorysummary,dist/${CND_CONF}/${IMAGE_TYPE}/memoryfile.xml$(MP_EXTRA_LD_POST)  -mdfp="${DFP_DIR}/xc16" 
+<<<<<<< HEAD
 	${MP_CC_DIR}\\xc16-bin2hex dist/${CND_CONF}/${IMAGE_TYPE}/EmbeddedProject.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX} -a  -omf=elf   -mdfp="${DFP_DIR}/xc16" 
+=======
+	${MP_CC_DIR}/xc16-bin2hex dist/${CND_CONF}/${IMAGE_TYPE}/EmbeddedProject.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX} -a  -omf=elf   -mdfp="${DFP_DIR}/xc16" 
+>>>>>>> 1c223b108610bbf810304fa87f699c5f2b16468b
 	
 endif
 
