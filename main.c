@@ -110,6 +110,7 @@ T1CONbits.TON = 1;
 
 int currentEvent  = -1;
 int score = 0;
+int level = 1;
 
 
 int main(void) 
@@ -127,11 +128,16 @@ int main(void)
             humanInteractionListener();
             currentActionUpdater();
         }
+         else {
+            scoreHandler(0);   //reset score
+            level = 1;          //reset level
+            //turn off all outputs
+            LATBbits.LATB2 = 0;     // Turn off green LED
+            LATCbits.LATC3 = 0;     //Turn off red LED
+            //turn off 7 seg
+            
+        }
     }
-<<<<<<< HEAD
-=======
-
->>>>>>> 9bdbeed48bcabad307f1381b613dc0e4a99536d6
     return 0;
 }
 
