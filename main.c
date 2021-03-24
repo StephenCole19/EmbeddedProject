@@ -174,8 +174,8 @@ void humanInteractionListener(){
 // 2 = analog stick
 // 3 = mic
 void currentActionUpdater(){
-    time_t t;
-    srand((unsigned) time(&t));
+//    time_t t;
+//    srand((unsigned) time(&t));
     currentEvent = rand() % 3;
 }
 
