@@ -117,8 +117,8 @@ int main(void)
         if (PORTCbits.RC0 == 0) {     //if switch is on
             //put all code in here
             
-            humanInteractionListner();
-            currentActionUpdater();
+            humanInteractionListener();
+            //currentActionUpdater();
         }
     }
     
@@ -143,18 +143,23 @@ int checkEventType(int userEvent)
 void humanInteractionListener(){
     int listening = 1; 
     int eventType = 0; 
+    int result = 0; // 1 == pass, 0 == fail
+    
     while(listening){
-        if(PORTbits.RC14 == 0){ //push button has been clicked
+        if(PORTCbits.RC14 == 0)
+        { //push button has been clicked
             listening = 0; //stop listening
-            checkEventType(1);
+            result = checkEventType(1);
         }
-        if(PORTBbits.RB14 == 0){
+        if(PORTBbits.RB14 == 0)
+        {
             listening = 0; //stop listening 
-            checkEventType(2);
+            result = checkEventType(2);
         }
-        if(/* mic has been detected??*/){
+        if(0) /* mic has been detected??*/
+        {
             listening = 0; 
-            checkEventType(3); 
+            result = checkEventType(3); 
         }
     }
 }
