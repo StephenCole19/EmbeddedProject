@@ -83,6 +83,8 @@
 
 #include "xc.h"
 #include <time.h>
+#include <stdio.h>
+#include <stdlib.h>
 #define FCY 2000000UL
 #define FOSC 4000000UL // FRC divided by 2 from 8MHz to 4MHz
 #include <libpic30.h>
@@ -104,7 +106,6 @@ T1CONbits.TON = 1;
 //Red LED       CS_2
 //Push Button   INT_1
 //Analog Stick  INT_2
-
 
 int main(void) 
 {
@@ -166,6 +167,18 @@ void humanInteractionListener(){
         }
     }
 }
+
+// updates the global variable currentEvent when called
+// generates a random number and assigns it to the variable
+// 1 = push button
+// 2 = analog stick
+// 3 = mic
+void currentActionUpdater(){
+    time_t t;
+    srand((unsigned) time(&t));
+    currentEvent = rand() % 3;
+}
+
 // Timer1 Interrupt
 void __attribute__((__interrupt__,no_auto_psv)) _T1Interrupt(void)
 {
