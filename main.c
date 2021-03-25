@@ -214,11 +214,7 @@ void currentActionUpdater()
 //    time_t t;
 //    srand((unsigned) time(&t));
     currentEvent = rand() % 3;
-<<<<<<< HEAD
-    
-=======
     T1CONbits.TON = 1;
->>>>>>> 7712623a06513281a27b7f22cdd0cfb9bf55921f
 }
 
 void successHandler()
