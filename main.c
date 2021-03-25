@@ -109,6 +109,7 @@ T1CONbits.TON = 1;
 
 
 int currentEvent  = -1;
+int highScore = 0;
 int score = 0;
 int level = 1;
 
@@ -180,10 +181,12 @@ void humanInteractionListener()
             result = checkEventType(3); 
         }
     }
-    if(fail == 1 || result == 0){
+    if(result == 0)
+    {
         failureHandler();
     }
-    else{
+    else if (result == 1)
+    {
         successHandler();
     }
 }
@@ -222,6 +225,7 @@ void scoreHandler(int result)
         {
             level++;
         }
+        highScoreHandler(score);
         //Increment and keep going
         //Every 5 levels speedup
     }
@@ -231,6 +235,22 @@ void scoreHandler(int result)
         //Reset score and tell game to stop
     }
 }
+
+void highScoreHandler(int score)
+{
+    if(score > highScore)
+    {
+        highScore = score;
+        updateSevenSeg(highScore);
+    }
+}
+
+void updateSevenSeg(int newScore)
+{
+    
+}
+
+
 // Timer1 Interrupt
 void __attribute__((__interrupt__,no_auto_psv)) _T1Interrupt(void)
 {
