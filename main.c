@@ -111,27 +111,42 @@ T1CONbits.TON = 1;
 int currentEvent  = -1;
 int score = 0;
 int level = 1;
+int fail;
+
+ T1CON = 0x0;        // Stop timer and clear control register,
+                            // set prescaler at 1:1, internal clock source 
+ T1CONbits.TECS = 3;
+ T1CONbits.TCKPS = 3;
+ T1CONbits.TCS = 0;
+ TMR1 = 0x0;         // Clear timer register
+ 
 
 
 int main(void) 
 {
     CLKDIVbits.FRCDIV = 1; // Divide FRC by 2
     
+    IEC0bits.T1IE = 1;
+    IFS0bits.T1IF = 0;
+    
     TRISCbits.TRISC0 = 1;  //C0 is input (on/off switch)
     
     while (1) 
     {
         if (PORTCbits.RC0 == 0) 
-        {     
+        {    
+            fail = 0;       //intialize fail to 0;
             //if switch is on
             //put all code in here
+            PR1 = 0xFFFF - 10000*level;       // Load period register - decrease time per level
             
-            humanInteractionListener();
-            currentActionUpdater();
+            currentActionUpdater();       // Generate event
+            humanInteractionListener();     // listen for user input
         }
         else {
             scoreHandler(0);        //reset score
             level = 1;              //reset level
+            
             //turn off all outputs
             LATBbits.LATB2 = 0;     //Turn off green LED
             LATCbits.LATC3 = 0;     //Turn off red LED
@@ -193,6 +208,7 @@ void currentActionUpdater()
 //    time_t t;
 //    srand((unsigned) time(&t));
     currentEvent = rand() % 3;
+    
 }
 
 void successHandler()
@@ -224,9 +240,12 @@ void scoreHandler(int result)
         //Reset score and tell game to stop
     }
 }
+
+
 // Timer1 Interrupt
 void __attribute__((__interrupt__,no_auto_psv)) _T1Interrupt(void)
 {
-    T1CONbits.TON = 0;
-    IFS0bits.T1IF = 0;
+    fail = 1;
+    T1CONbits.TON = 0;      //turn timer off 
+    IFS0bits.T1IF = 0;      
 }
