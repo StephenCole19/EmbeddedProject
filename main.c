@@ -123,8 +123,13 @@ int main(void)
     IFS0bits.T1IF = 0;
     
     //inputs
-    
     TRISCbits.TRISC0 = 1;  //C0 is input (on/off switch)
+    TRISCbits.TRISC14 = 1; //C14 is input (pushbutton)
+    TRISBbits.TRISB15 = 1; //B15 is input (analog stick)
+    
+    //outputs
+    TRISBbits.TRISB2 = 0;   //B2 is output (green LED)
+    TRISCbits.TRISC3 = 0;   //C3 is output (red LED)
     
     highScore = 0; //initialize high score to 0
     
