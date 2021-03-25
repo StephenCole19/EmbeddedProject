@@ -180,6 +180,12 @@ void humanInteractionListener()
             result = checkEventType(3); 
         }
     }
+    if(fail == 1 || result == 0){
+        failureHandler();
+    }
+    else{
+        successHandler();
+    }
 }
 
 // updates the global variable currentEvent when called
@@ -193,6 +199,7 @@ void currentActionUpdater()
 //    time_t t;
 //    srand((unsigned) time(&t));
     currentEvent = rand() % 3;
+    T1CONbits.TON = 1;
 }
 
 void successHandler()
