@@ -218,7 +218,7 @@ void currentActionUpdater()
 //    time_t t;
 //    srand((unsigned) time(&t));
     currentEvent = rand() % 3;
-    T1CONbits.TON = 1;
+    T1CONbits.TON = 1; //starting timer
 }
 
 void successHandler()
