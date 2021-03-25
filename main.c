@@ -109,6 +109,7 @@ T1CONbits.TON = 1;
 
 
 int currentEvent  = -1;
+int highScore = 0;
 int score = 0;
 int level = 1;
 int fail = 0;
@@ -117,26 +118,21 @@ int fail = 0;
 int main(void) 
 {
     CLKDIVbits.FRCDIV = 1; // Divide FRC by 2
-    
-    T1CON = 0x0;        // Stop timer and clear control register,
-                            // set prescaler at 1:1, internal clock source 
-    T1CONbits.TECS = 3;
-    T1CONbits.TCKPS = 3;
-    T1CONbits.TCS = 0;
-    TMR1 = 0x0;         // Clear timer register
  
     IEC0bits.T1IE = 1;
     IFS0bits.T1IF = 0;
     
+    //inputs
+    
     TRISCbits.TRISC0 = 1;  //C0 is input (on/off switch)
     
-    highScore = 0; initialize high score to 
+    highScore = 0; //initialize high score to 0
     
     while (1) 
     {
         if (PORTCbits.RC0 == 0)         //if switch is on
         {    
-            fail = 0;       //intialize fail to 0;
+            fail = 0;       //initialize fail to 0;
             
             //put all code in here
             PR1 = 0xFFFF - 10000*level;       // Load period register - decrease time per level
@@ -173,6 +169,15 @@ int checkEventType(int userEvent)
     return ret;
 }
 
+void setClockBits()
+{
+    T1CON = 0x0;        // Stop timer and clear control register,               
+    T1CONbits.TECS = 3; // set prescaler at 1:1, internal clock source 
+    T1CONbits.TCKPS = 3;
+    T1CONbits.TCS = 0;
+    TMR1 = 0x0;         // Clear timer register
+}
+
 void humanInteractionListener()
 {
     int listening = 1; 
@@ -196,10 +201,12 @@ void humanInteractionListener()
             result = checkEventType(3); 
         }
     }
-    if(fail == 1 || result == 0){
+    if(result == 0)
+    {
         failureHandler();
     }
-    else{
+    else if (result == 1)
+    {
         successHandler();
     }
 }
@@ -216,7 +223,6 @@ void currentActionUpdater()
 //    srand((unsigned) time(&t));
     currentEvent = rand() % 3;
     T1CONbits.TON = 1;
-
 }
 
 void successHandler()
@@ -239,6 +245,7 @@ void scoreHandler(int result)
         {
             level++;
         }
+        highScoreHandler(score);
         //Increment and keep going
         //Every 5 levels speedup
     }
@@ -247,6 +254,20 @@ void scoreHandler(int result)
         score = 0;
         //Reset score and tell game to stop
     }
+}
+
+void highScoreHandler(int score)
+{
+    if(score > highScore)
+    {
+        highScore = score;
+        updateSevenSeg(highScore);
+    }
+}
+
+void updateSevenSeg(int newScore)
+{
+    
 }
 
 
