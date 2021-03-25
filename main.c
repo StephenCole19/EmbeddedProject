@@ -107,6 +107,16 @@ T1CONbits.TON = 1;
 //Push Button   INT_1
 //Analog Stick  INT_2
 
+/*
+ * 7SEG 
+ * 1st EN from left SDA_1 RD4
+ * 2nd SCL_1 RD3
+ * 3rd TX_1 RB12
+ * 4th RX_1 RC15
+ * A PWM_1 RC13
+ */
+
+
 
 int currentEvent  = -1;
 int highScore = 0;
@@ -123,6 +133,13 @@ int main(void)
     IFS0bits.T1IF = 0;
     
     TRISCbits.TRISC0 = 1;  //C0 is input (on/off switch)
+    
+    //7SEG
+    TRISDbits.TRISD4 = 0;
+    TRISDbits.TRISD3 = 0;
+    TRISBbits.TRISB12 = 0;
+    TRISCbits.TRISC15= 0;
+    TRISCbits.TRISC13= 0;
     
     while (1) 
     {
@@ -263,7 +280,11 @@ void highScoreHandler(int score)
 
 void updateSevenSeg(int newScore)
 {
-    
+    LATDbits.LATD4 = 1;
+    LATDbits.LATD3 = 1;
+    LATBbits.LATB12 = 1;
+    LATCbits.LATC15= 1;
+    LATCbits.LATC13= 1;
 }
 
 
