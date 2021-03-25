@@ -113,7 +113,7 @@ int highScore = 0;
 int score = 0;
 int level = 1;
 int fail = 0;
-
+int listening = 1; 
 
 int main(void) 
 {
@@ -185,7 +185,7 @@ void setClockBits()
 
 void humanInteractionListener()
 {
-    int listening = 1; 
+    listening = 1; 
     int eventType = 0; 
     int result = 0; // 1 == pass, 0 == fail
     
@@ -206,7 +206,7 @@ void humanInteractionListener()
             result = checkEventType(3); 
         }
     }
-    if(result == 0)
+    if(result == 0 || fail == 1)
     {
         failureHandler();
     }
