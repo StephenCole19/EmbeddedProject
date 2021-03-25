@@ -122,17 +122,26 @@ int currentEvent  = -1;
 int highScore = 0;
 int score = 0;
 int level = 1;
-int fail;
-
+int fail = 0;
+int listening = 1; 
 
 int main(void) 
 {
     CLKDIVbits.FRCDIV = 1; // Divide FRC by 2
-    
+ 
     IEC0bits.T1IE = 1;
     IFS0bits.T1IF = 0;
     
+    //inputs
     TRISCbits.TRISC0 = 1;  //C0 is input (on/off switch)
+    TRISCbits.TRISC14 = 1; //C14 is input (pushbutton)
+    TRISBbits.TRISB15 = 1; //B15 is input (analog stick)
+    
+    //outputs
+    TRISBbits.TRISB2 = 0;   //B2 is output (green LED)
+    TRISCbits.TRISC3 = 0;   //C3 is output (red LED)
+    
+    highScore = 0; //initialize high score to 0
     
     //7SEG
     TRISDbits.TRISD4 = 0;
@@ -143,17 +152,17 @@ int main(void)
     
     while (1) 
     {
-        if (PORTCbits.RC0 == 0) 
+        if (PORTCbits.RC0 == 0)         //if switch is on
         {    
-            fail = 0;       //intialize fail to 0;
-            //if switch is on
+            fail = 0;       //initialize fail to 0;
+            
             //put all code in here
             PR1 = 0xFFFF - 10000*level;       // Load period register - decrease time per level
             
             currentActionUpdater();       // Generate event
             humanInteractionListener();     // listen for user input
         }
-        else {
+        else {                      //if switch is off
             scoreHandler(0);        //reset score
             level = 1;              //reset level
             
@@ -193,7 +202,7 @@ void setClockBits()
 
 void humanInteractionListener()
 {
-    int listening = 1; 
+    listening = 1; 
     int eventType = 0; 
     int result = 0; // 1 == pass, 0 == fail
     
@@ -214,7 +223,7 @@ void humanInteractionListener()
             result = checkEventType(3); 
         }
     }
-    if(result == 0)
+    if(result == 0 || fail == 1)
     {
         failureHandler();
     }
