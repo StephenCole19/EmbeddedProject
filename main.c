@@ -575,7 +575,9 @@ void __attribute__((__interrupt__,no_auto_psv)) _T1Interrupt(void)
     else
     {
         fail = 1;
+        listening = 0;
     }
+
     T1CONbits.TON = 0;      //turn timer off 
     IFS0bits.T1IF = 0;      
 }
