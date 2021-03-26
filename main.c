@@ -85,10 +85,10 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <libpic30.h>
 #define FCY 2000000UL
 #define FOSC 4000000UL // FRC divided by 2 from 8MHz to 4MHz
-
+#include <libpic30.h>
+#include <stdbool.h>
 /*
 clock stuff
 T1CON = 0x0;
@@ -109,11 +109,17 @@ T1CONbits.TON = 1;
 
 /*
  * 7SEG 
- * 1st EN from left SDA_1 RD4
- * 2nd SCL_1 RD3
- * 3rd TX_1 RB12
- * 4th RX_1 RC15
- * A PWM_1 RC13
+ * 1st EN from left SDA_1 RD4 PIN 12
+ * 2nd SCL_1 RD3 PIN 9
+ * 3rd TX_1 RB12 PIN 8
+ * 4th RX_1 RC15 PIN 6
+ * A PWM_1 RC13 PIN 11
+ * B AN_1 RC0 PIN 7
+ * C RST_1 RC7 PIN 4
+ * D SCK_1 RB7 PIN 2
+ * E MISO_1 RB8 PIN 1
+ * F MOSI_1 RB9 PIN 10
+ * G SDA_2 RC8 PIN 5
  */
 
 
@@ -124,6 +130,7 @@ int score = 0;
 int level = 1;
 int fail = 0;
 int listening = 1; 
+bool display7SEG = false;
 
 int main(void) 
 {
@@ -144,11 +151,20 @@ int main(void)
     highScore = 0; //initialize high score to 0
     
     //7SEG
-    TRISDbits.TRISD4 = 0;
-    TRISDbits.TRISD3 = 0;
-    TRISBbits.TRISB12 = 0;
-    TRISCbits.TRISC15= 0;
-    TRISCbits.TRISC13= 0;
+    // DP# EN bits
+    TRISDbits.TRISD4 = 0; // 1st EN from left SDA_1 RD4
+    TRISDbits.TRISD3 = 0; // 2nd SCL_1 RD3
+    TRISBbits.TRISB12 = 0; // 3rd TX_1 RB12
+    TRISCbits.TRISC15= 0; // 4th RX_1 RC15 PIN 6
+    
+    // A-G
+    TRISCbits.TRISC13= 0; // A PWM_1 RC13 PIN 11
+    TRISCbits.TRISC0= 0;//B AN_1 RC0 PIN 7
+    TRISCbits.TRISC7= 0;//C RST_1 RC7 PIN 4
+    TRISBbits.TRISB7= 0;//D SCK_1 RB7 PIN 2
+    TRISBbits.TRISB8= 0;//E MISO_1 RB8 PIN 1
+    TRISBbits.TRISB9= 0;//F MOSI_1 RB9 PIN 10
+    TRISCbits.TRISC8= 0;//G SDA_2 RC8 PIN 5
     
     while (1) 
     {
@@ -287,20 +303,279 @@ void highScoreHandler(int score)
     }
 }
 
+// Call updateSevenSeg with new number to display on 7SEG
+// Will display the number then turn off the 7SEG
 void updateSevenSeg(int newScore)
-{
-    LATDbits.LATD4 = 1;
-    LATDbits.LATD3 = 1;
-    LATBbits.LATB12 = 1;
-    LATCbits.LATC15= 1;
-    LATCbits.LATC13= 1;
+{    
+    T1CON = 0x0;
+    T1CONbits.TECS = 3;
+    T1CONbits.TCKPS = 3;
+    T1CONbits.TCS = 0;
+    TMR1 = 0x0;
+    PR1 = 0xAAAA;
+    IEC0bits.T1IE = 1;
+    IFS0bits.T1IF = 0;
+    T1CONbits.TON = 1;
+    
+    int digit0 = newScore % 10;
+    int digit1 = (newScore / 10) % 10;
+    int digit2 = (newScore / 100) % 10;
+    int digit3 = (newScore / 1000) % 10;
+    
+    if(digit3 == 0)
+    {
+        digit3  = -1;
+        if(digit2 == 0)
+        {
+            digit2 = -1;
+            if(digit1 == 0)
+                digit1 = -1;
+        }
+    }
+    
+    int i = 0;
+    
+    display7SEG = true;
+    int currentDigit;
+    while(display7SEG)
+    {
+        
+        
+        if(currentDigit == 0)
+            display0();
+        else if(currentDigit == 1)
+        {
+            display1();
+            //break;
+        }
+        else if(currentDigit == 2)
+            display2();
+        else if(currentDigit == 3)
+            display3();
+        else if(currentDigit == 4)
+            display4();
+        else if(currentDigit == 5)
+            display5();
+        else if(currentDigit == 6)
+            display6();
+        else if(currentDigit == 7)
+            display7();
+        else if(currentDigit == 8)
+            display8();
+        else if(currentDigit == 9)
+            display9();
+        
+        if(i == 0)
+        {
+            __delay_ms(10);
+            enableDP1();
+            currentDigit = digit0;
+            i++;
+        }
+        else if(i == 1)
+        {
+            if(digit1 != -1)
+            {
+                __delay_ms(10);
+                enableDP2();
+                currentDigit = digit1;
+            }
+            i++;
+        }
+        else if(i == 2)
+        {
+            if(digit2 != -1)
+            {
+                __delay_ms(10);
+                enableDP3();
+                currentDigit = digit2;
+            }
+            i++;
+        }
+        else
+        {
+            if(digit3 != -1)
+            {
+                __delay_ms(10);
+                enableDP4();
+                currentDigit = digit3;
+            }
+           i = 0;
+        } 
+    }
+    setDPbits();
 }
 
+
+void enableDP1()
+{
+    LATDbits.LATD4 = 0; // DP4 EN 
+    LATDbits.LATD3 = 0; // DP3 EN
+    LATBbits.LATB12 = 0; // DP2 EN
+    LATCbits.LATC15= 1; // DP1 EN
+}
+
+void enableDP2()
+{
+    LATDbits.LATD4 = 0; // DP4 EN 
+    LATDbits.LATD3 = 0; // DP3 EN
+    LATBbits.LATB12 = 1; // DP2 EN
+    LATCbits.LATC15= 0; // DP1 EN
+}
+
+void enableDP3()
+{
+    LATDbits.LATD4 = 0; // DP4 EN 
+    LATDbits.LATD3 = 1; // DP3 EN
+    LATBbits.LATB12 = 0; // DP2 EN
+    LATCbits.LATC15= 0; // DP1 EN
+}
+
+void enableDP4()
+{
+    LATDbits.LATD4 = 1; // DP4 EN 
+    LATDbits.LATD3 = 0; // DP3 EN
+    LATBbits.LATB12 = 0; // DP2 EN
+    LATCbits.LATC15= 0; // DP1 EN
+}
+
+void setDPbits()
+{
+    LATDbits.LATD4 = 0; // DP4 EN 
+    LATDbits.LATD3 = 0; // DP3 EN
+    LATBbits.LATB12 = 0; // DP2 EN
+    LATCbits.LATC15= 0; // DP1 EN
+    
+    LATCbits.LATC13= 1; // A on
+    LATCbits.LATC0= 1;//B AN_1 RC0 PIN 7
+    LATCbits.LATC7= 1;//C RST_1 RC7 PIN 4
+    LATBbits.LATB7= 1;//D SCK_1 RB7 PIN 2
+    LATBbits.LATB8= 1;//E MISO_1 RB8 PIN 1
+    LATBbits.LATB9= 1;//F MOSI_1 RB9 PIN 10
+    LATCbits.LATC8= 1;//G SDA_2 RC8 PIN 5
+}
+
+void display0()
+{
+    LATCbits.LATC13= 0; // A on
+    LATCbits.LATC0= 0;//B AN_1 RC0 PIN 7
+    LATCbits.LATC7= 0;//C RST_1 RC7 PIN 4
+    LATBbits.LATB7= 0;//D SCK_1 RB7 PIN 2
+    LATBbits.LATB8= 0;//E MISO_1 RB8 PIN 1
+    LATBbits.LATB9= 0;//F MOSI_1 RB9 PIN 10
+    LATCbits.LATC8= 1;//G SDA_2 RC8 PIN 5
+}
+
+void display1()
+{
+    LATCbits.LATC13= 1; // A on
+    LATCbits.LATC0= 0;//B AN_1 RC0 PIN 7
+    LATCbits.LATC7= 0;//C RST_1 RC7 PIN 4
+    LATBbits.LATB7= 1;//D SCK_1 RB7 PIN 2
+    LATBbits.LATB8= 1;//E MISO_1 RB8 PIN 1
+    LATBbits.LATB9= 1;//F MOSI_1 RB9 PIN 10
+    LATCbits.LATC8= 1;//G SDA_2 RC8 PIN 5
+}
+
+void display2()
+{
+    LATCbits.LATC13= 0; // A on
+    LATCbits.LATC0= 0;//B AN_1 RC0 PIN 7
+    LATCbits.LATC7= 1;//C RST_1 RC7 PIN 4
+    LATBbits.LATB7= 0;//D SCK_1 RB7 PIN 2
+    LATBbits.LATB8= 0;//E MISO_1 RB8 PIN 1
+    LATBbits.LATB9= 1;//F MOSI_1 RB9 PIN 10
+    LATCbits.LATC8= 0;//G SDA_2 RC8 PIN 5
+}
+
+void display3()
+{
+    LATCbits.LATC13= 0; // A on
+    LATCbits.LATC0= 0;//B AN_1 RC0 PIN 7
+    LATCbits.LATC7= 0;//C RST_1 RC7 PIN 4
+    LATBbits.LATB7= 0;//D SCK_1 RB7 PIN 2
+    LATBbits.LATB8= 1;//E MISO_1 RB8 PIN 1
+    LATBbits.LATB9= 1;//F MOSI_1 RB9 PIN 10
+    LATCbits.LATC8= 0;//G SDA_2 RC8 PIN 5
+}
+
+void display4()
+{
+    LATCbits.LATC13= 1; // A on
+    LATCbits.LATC0= 0;//B AN_1 RC0 PIN 7
+    LATCbits.LATC7= 0;//C RST_1 RC7 PIN 4
+    LATBbits.LATB7= 1;//D SCK_1 RB7 PIN 2
+    LATBbits.LATB8= 1;//E MISO_1 RB8 PIN 1
+    LATBbits.LATB9= 0;//F MOSI_1 RB9 PIN 10
+    LATCbits.LATC8= 0;//G SDA_2 RC8 PIN 5
+}
+
+void display5()
+{
+    LATCbits.LATC13= 0; // A on
+    LATCbits.LATC0= 1;//B AN_1 RC0 PIN 7
+    LATCbits.LATC7= 0;//C RST_1 RC7 PIN 4
+    LATBbits.LATB7= 0;//D SCK_1 RB7 PIN 2
+    LATBbits.LATB8= 1;//E MISO_1 RB8 PIN 1
+    LATBbits.LATB9= 0;//F MOSI_1 RB9 PIN 10
+    LATCbits.LATC8= 0;//G SDA_2 RC8 PIN 5
+}
+
+void display6()
+{
+    LATCbits.LATC13= 0; // A on
+    LATCbits.LATC0= 1;//B AN_1 RC0 PIN 7
+    LATCbits.LATC7= 0;//C RST_1 RC7 PIN 4
+    LATBbits.LATB7= 0;//D SCK_1 RB7 PIN 2
+    LATBbits.LATB8= 0;//E MISO_1 RB8 PIN 1
+    LATBbits.LATB9= 0;//F MOSI_1 RB9 PIN 10
+    LATCbits.LATC8= 0;//G SDA_2 RC8 PIN 5
+}
+
+void display7()
+{
+    LATCbits.LATC13= 0; // A on
+    LATCbits.LATC0= 0;//B AN_1 RC0 PIN 7
+    LATCbits.LATC7= 0;//C RST_1 RC7 PIN 4
+    LATBbits.LATB7= 1;//D SCK_1 RB7 PIN 2
+    LATBbits.LATB8= 1;//E MISO_1 RB8 PIN 1
+    LATBbits.LATB9= 1;//F MOSI_1 RB9 PIN 10
+    LATCbits.LATC8= 1;//G SDA_2 RC8 PIN 5
+}
+
+void display8()
+{
+    LATCbits.LATC13= 0; // A on
+    LATCbits.LATC0= 0;//B AN_1 RC0 PIN 7
+    LATCbits.LATC7= 0;//C RST_1 RC7 PIN 4
+    LATBbits.LATB7= 0;//D SCK_1 RB7 PIN 2
+    LATBbits.LATB8= 0;//E MISO_1 RB8 PIN 1
+    LATBbits.LATB9= 0;//F MOSI_1 RB9 PIN 10
+    LATCbits.LATC8= 0;//G SDA_2 RC8 PIN 5
+}
+
+void display9()
+{
+    LATCbits.LATC13= 0; // A on
+    LATCbits.LATC0= 0;//B AN_1 RC0 PIN 7
+    LATCbits.LATC7= 0;//C RST_1 RC7 PIN 4
+    LATBbits.LATB7= 1;//D SCK_1 RB7 PIN 2
+    LATBbits.LATB8= 1;//E MISO_1 RB8 PIN 1
+    LATBbits.LATB9= 0;//F MOSI_1 RB9 PIN 10
+    LATCbits.LATC8= 0;//G SDA_2 RC8 PIN 5
+}
 
 // Timer1 Interrupt
 void __attribute__((__interrupt__,no_auto_psv)) _T1Interrupt(void)
 {
-    fail = 1;
+    if(display7SEG)
+    {
+        display7SEG = false;
+    }
+    else
+    {
+        fail = 1;
+    }
     T1CONbits.TON = 0;      //turn timer off 
     IFS0bits.T1IF = 0;      
 }
