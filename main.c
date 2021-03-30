@@ -172,7 +172,7 @@ int main(void)
     ADCON1Lbits.RADON = 1;  // enable
     ADCON1Hbits.FORM = 1;   // fractional data output format bit set to integer
     ADCON1Hbits.SHRRES = 11;   // shared ADC core resolution selection bits
-    ADCON3Hbits.CLKSEL = 01;
+    ADCON3Hbits.CLKSEL = 01; // ADC Module clock source selection bits set to FOSC
     
     
     
