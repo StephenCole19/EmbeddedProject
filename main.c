@@ -169,9 +169,10 @@ int main(void)
     TRISCbits.TRISC8= 0;//G SDA_2 RC8 PIN 5
     
     // ANALOG INPUTS (mic)
-    ADCON3bits.ADCS = 20;   // AN0-AN8 
-    ADCON1bits.ADON = 1;    // ADC is on
+    ADCON3Lbits.ADCS = 20;   // AN0-AN8 
+    ADCON1Lbits.ADON = 1;    // ADC is on
     
+
     while (1) 
     {
         if (PORTCbits.RC0 == 0)         //if switch is on
