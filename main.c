@@ -169,8 +169,10 @@ int main(void)
     TRISCbits.TRISC8= 0;//G SDA_2 RC8 PIN 5
     
     // ANALOG INPUTS (mic)
-    ADCON3Lbits.ADCS = 20;   // AN0-AN8 
-    ADCON1Lbits.ADON = 1;    // ADC is on
+    ADCON1Lbits.RADON = 1;  // enable
+    ADCON1Hbits.FORM = 1;   // fractional data output format bit set to integer
+    ADCON1Hbits.SHRRES = 11;   // shared ADC core resolution selection bits
+    ADCON3Hbits.CLKSEL = 01; // ADC Module clock source selection bits set to FOSC
     
 
     while (1) 
@@ -575,10 +577,10 @@ void display9()
 
 // microphone read (analog)
 // not using function prototype since we want to call randomly
-void listenMic(void){
+unsigned int listenMic(void){
     ADCON1bits.SAMP = 1;    // enable sampling
     __delay_ms(0xFFFF - 10000*level); // wait for user to make noise
-    ADCON2bits.SAMP = 0;    // converting sample
+    ADCON1bits.SAMP = 0;    // converting sample
     
     while(!ADCON1bits.DONE){
         return ADCBUF0;
