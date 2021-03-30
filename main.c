@@ -86,10 +86,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <libpic30.h>
+#include <stdbool.h>
 #define FCY 2000000UL
 #define FOSC 4000000UL // FRC divided by 2 from 8MHz to 4MHz
-#include <libpic30.h>
-#include <stdbool.h>
+
 /*
 clock stuff
 T1CON = 0x0;
@@ -168,6 +168,10 @@ int main(void)
     TRISBbits.TRISB9= 0;//F MOSI_1 RB9 PIN 10
     TRISCbits.TRISC8= 0;//G SDA_2 RC8 PIN 5
     
+    // ANALOG INPUTS (mic)
+    ADCON3bits.ADCS = 20;   // AN0-AN8 
+    ADCON1bits.ADON = 1;    // ADC is on
+    
     while (1) 
     {
         if (PORTCbits.RC0 == 0)         //if switch is on
@@ -235,7 +239,8 @@ void humanInteractionListener()
             listening = 0; //stop listening 
             result = checkEventType(2);
         }
-        if(0) /* mic has been detected??*/
+        
+        if(currentEvent == 3 && listenMic() > 70) /* mic has been detected??*/
         {
             listening = 0; 
             result = checkEventType(3); 
@@ -565,6 +570,18 @@ void display9()
     LATBbits.LATB8= 1;//E MISO_1 RB8 PIN 1
     LATBbits.LATB9= 0;//F MOSI_1 RB9 PIN 10
     LATCbits.LATC8= 0;//G SDA_2 RC8 PIN 5
+}
+
+// microphone read (analog)
+// not using function prototype since we want to call randomly
+void listenMic(void){
+    ADCON1bits.SAMP = 1;    // enable sampling
+    __delay_ms(0xFFFF - 10000*level); // wait for user to make noise
+    ADCON2bits.SAMP = 0;    // converting sample
+    
+    while(!ADCON1bits.DONE){
+        return ADCBUF0;
+    }
 }
 
 // Timer1 Interrupt
