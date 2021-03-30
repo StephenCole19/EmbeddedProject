@@ -169,8 +169,8 @@ int main(void)
     TRISCbits.TRISC8= 0;//G SDA_2 RC8 PIN 5
     
     // ANALOG INPUTS (mic)
-    ADCON3bits.ADCS = 20;   // AN0-AN8 
-    ADCON1bits.ADON = 1;    // ADC is on
+//    ADCON3bits.ADCS = 20;   // AN0-AN8 
+//    ADCON1bits.ADON = 1;    // ADC is on
     
     while (1) 
     {
@@ -574,7 +574,7 @@ void display9()
 
 // microphone read (analog)
 // not using function prototype since we want to call randomly
-void listenMic(void){
+unsigned int listenMic(void){
     ADCON1bits.SAMP = 1;    // enable sampling
     __delay_ms(0xFFFF - 10000*level); // wait for user to make noise
     ADCON2bits.SAMP = 0;    // converting sample
