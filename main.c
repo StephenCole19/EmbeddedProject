@@ -132,6 +132,7 @@ int level = 1;
 int fail = 0;
 int listening = 1; 
 bool display7SEG = false;
+unsigned dataAN0;
 
 
 int main(void) 
@@ -145,10 +146,13 @@ int main(void)
     TRISCbits.TRISC0 = 1;  //C0 is input (on/off switch)
     TRISCbits.TRISC14 = 1; //C14 is input (pushbutton)
     TRISBbits.TRISB15 = 1; //B15 is input (analog stick)
+    ANSELAbits.ANSELA0 = 1;
+    TRISAbits.TRISA0 = 1; // RA0 AN
     
     //outputs
     TRISBbits.TRISB2 = 0;   //B2 is output (green LED)
     TRISCbits.TRISC3 = 0;   //C3 is output (red LED)
+    TRISDbits.TRISD15 = 1; //D15 is output (Speaker)
     
     highScore = 0; //initialize high score to 0
     
@@ -170,12 +174,22 @@ int main(void)
     
     // ANALOG INPUTS (microphone)
     ADCON1Lbits.ADON = 1;  // enable
-    ADCON1Hbits.FORM = 1;   // fractional data output format bit set to integer
+    ADCON5Lbits.C0PWR = 1;
+    ADCON3Hbits.C0EN = 1;
     ADCON1Hbits.SHRRES = 11;   // shared ADC core resolution selection bits
-    ADCON3Hbits.CLKSEL = 01; // ADC Module clock source selection bits set to FOSC
-    ADCON3Lbits.CNVCHSEL = 1; // channel number selection for software individual channel conversion trigger bits
-    ADCON3Lbits.SHRSAMP = 0;    // shared ADC core samples an analog input specified by CNVSCHSEL bits
+    //ADCON3Lbits.CNVCHSEL = 1; // channel number selection for software individual channel conversion trigger bits
+    //ADCON3Lbits.SHRSAMP = 0;    // shared ADC core samples an analog input specified by CNVSCHSEL bits
     
+    ADCON3Hbits.CLKSEL = 01; // ADC Module clock source selection bits set to FOSC
+    ADCON3Lbits.REFSEL = 0;
+    ADCON1Hbits.FORM = 1;   // fractional data output format bit set to integer
+    ADMOD0Lbits.SIGN0 = 0;
+    ADMOD0Lbits.DIFF0 = 0;
+    ADIELbits.IE0 = 1;
+    _ADCAN0IF = 0; // clear interrupt flag for AN0
+    _ADCAN0IE = 1; // enable interrupt for AN0
+    
+    ADTRIG0Lbits.TRGSRC0 = 13;
 
     while (1) 
     {
@@ -227,6 +241,15 @@ void setClockBits()
     TMR1 = 0x0;         // Clear timer register
 }
 
+void startMic()
+{
+    /*
+    T2CONbits.TCS = 0; // clock from peripheral clock
+    T2CONbits.TCKPS = 0; // 1:1 prescale
+    PR2 = 0x8000; // rollover every 0x8000 clocks
+    T2CONbits.TON = 1;
+     */
+}
 void humanInteractionListener()
 {
     listening = 1; 
@@ -356,10 +379,7 @@ void updateSevenSeg(int newScore)
         if(currentDigit == 0)
             display0();
         else if(currentDigit == 1)
-        {
             display1();
-            //break;
-        }
         else if(currentDigit == 2)
             display2();
         else if(currentDigit == 3)
@@ -580,13 +600,13 @@ void display9()
 // microphone read (analog)
 // not using function prototype since we want to call randomly
 unsigned int listenMic(void){
-    ADCON1bits.SAMP = 1;    // enable sampling
+    //ADCON1bits.SAMP = 1;    // enable sampling
     __delay_ms(0xFFFF - 10000*level); // wait for user to make noise
-    ADCON1bits.SAMP = 0;    // converting sample
+    //ADCON1bits.SAMP = 0;    // converting sample
     
-    while(!ADCON1bits.DONE){
+    /*while(!ADCON1bits.DONE){
         return ADCBUF0;
-    }
+    }*/
 }
 
 // Timer1 Interrupt
@@ -604,4 +624,11 @@ void __attribute__((__interrupt__,no_auto_psv)) _T1Interrupt(void)
 
     T1CONbits.TON = 0;      //turn timer off 
     IFS0bits.T1IF = 0;      
+}
+
+// ADC AN0 ISR
+void __attribute__((interrupt, no_auto_psv)) _ADCAN0Interrupt(void)
+{
+    dataAN0 = ADCBUF0; // read conversion result
+    _ADCAN0IF = 0; // clear interrupt flag
 }
