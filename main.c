@@ -168,11 +168,13 @@ int main(void)
     TRISBbits.TRISB9= 0;//F MOSI_1 RB9 PIN 10
     TRISCbits.TRISC8= 0;//G SDA_2 RC8 PIN 5
     
-    // ANALOG INPUTS (mic)
-    ADCON1Lbits.RADON = 1;  // enable
+    // ANALOG INPUTS (microphone)
+    ADCON1Lbits.ADON = 1;  // enable
     ADCON1Hbits.FORM = 1;   // fractional data output format bit set to integer
     ADCON1Hbits.SHRRES = 11;   // shared ADC core resolution selection bits
     ADCON3Hbits.CLKSEL = 01; // ADC Module clock source selection bits set to FOSC
+    ADCON3Lbits.CNVCHSEL = 1; // channel number selection for software individual channel conversion trigger bits
+    ADCON3Lbits.SHRSAMP = 0;    // shared ADC core samples an analog input specified by CNVSCHSEL bits
     
 
     while (1) 
