@@ -152,7 +152,11 @@ int main(void)
     //outputs
     TRISBbits.TRISB2 = 0;   //B2 is output (green LED)
     TRISCbits.TRISC3 = 0;   //C3 is output (red LED)
-    TRISDbits.TRISD15 = 1; //D15 is output (Speaker)
+    //TRISDbits.TRISD15 = 1; //D15 is output (Speaker)
+    
+    //Speaker
+    ACLKCON1bits.FRCSEL = 1;
+    ACLKCON1bits.APLLPRE = 1;
     
     highScore = 0; //initialize high score to 0
     

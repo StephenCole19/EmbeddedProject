@@ -4,7 +4,7 @@
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
             <name>Embedded</name>
-            <creation-uuid>2a68c966-7242-4401-b39e-066f16b64e1f</creation-uuid>
+            <creation-uuid>2a66adbc-bc3f-4eed-b49a-d5fcda65617d</creation-uuid>
             <make-project-type>0</make-project-type>
             <c-extensions>c</c-extensions>
             <cpp-extensions/>
