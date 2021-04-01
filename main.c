@@ -146,7 +146,7 @@ int main(void)
     TRISCbits.TRISC0 = 1;  //C0 is input (on/off switch)
     TRISCbits.TRISC14 = 1; //C14 is input (pushbutton)
     TRISBbits.TRISB15 = 1; //B15 is input (analog stick)
-    ANSELAbits.ANSELA0 = 1;
+    ANSELAbits.ANSELA0 = 0;
     TRISAbits.TRISA0 = 1; // RA0 AN
     
     //outputs
@@ -217,6 +217,7 @@ int main(void)
     
     while (1) 
     {
+        listenMic();
         if (PORTCbits.RC0 == 0)         //if switch is on
         {    
             fail = 0;       //initialize fail to 0;
@@ -624,7 +625,14 @@ void display9()
 // not using function prototype since we want to call randomly
 void listenMic(void)
 {
+    LATAbits.LATA0 = 1;
+    ANSELAbits.ANSELA0 = 1;
+    ADCBUF0 = 0x0;
+    __delay_ms(1500);
     ADCON3Lbits.SWCTRG = 1;
+    __delay_ms(1000);
+    ANSELAbits.ANSELA0 = 0;
+    updateSevenSeg(dataAN0);
 }
 
 // Timer1 Interrupt
@@ -642,7 +650,8 @@ void __attribute__((__interrupt__,no_auto_psv)) _T1Interrupt(void)
 // ADC AN0 ISR
 void __attribute__((interrupt, no_auto_psv)) _ADCAN0Interrupt(void)
 {
-    ADCON3Lbits.SWCTRG = 0;
     dataAN0 = ADCBUF0; // read conversion result
+    LATAbits.LATA0 = 0;
+    ADCBUF0 = 0x0;
     _ADCAN0IF = 0; // clear interrupt flag
 }
