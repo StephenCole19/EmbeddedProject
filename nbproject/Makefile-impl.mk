@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=EmbeddedProject
+PROJECTNAME=Embedded
 
 # Active Configuration
 DEFAULTCONF=default

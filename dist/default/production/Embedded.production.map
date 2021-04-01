@@ -53,6 +53,8 @@ c:/program files/microchip/xc16/v1.70/bin/bin/../../lib\liblega-pic30-elf.a(data
                               c:/program files/microchip/xc16/v1.70/bin/bin/../../lib\liblega-pic30-elf.a(crt0_extendedch.o) (__data_init_extended)
 c:/program files/microchip/xc16/v1.70/bin/bin/../../lib\liblega-pic30-elf.a(crt_start_mode_normalch.Leo)
                               (__crt_start_mode_normal)
+c:/program files/microchip/xc16/v1.70/bin/bin/../../lib\liblega-pic30-elf.a(delay32ch.Leo)
+                              build/default/production/main.o (___delay32)
 c:/program files/microchip/xc16/v1.70/bin/bin/../../lib\liblega-c-elf.a(rand.CH_eo)
                               build/default/production/main.o (_rand)
 c:/program files/microchip/xc16/v1.70/bin/bin/../../lib\libm-elf.a(mulsi3.cheo)
@@ -90,11 +92,12 @@ Default Scalar Model: Small
 
 section                    address   length (PC units)   length (bytes) (dec)
 -------                    -------   -----------------   --------------------
-.text                        0x200               0x238           0x354  (852)
-.text                        0x438               0x492           0x6db  (1755)
-.dinit                       0x8ca                0x22            0x33  (51)
+.text                        0x200               0x222           0x333  (819)
+.text                        0x422               0x518           0x7a4  (1956)
+.dinit                       0x93a                0x22            0x33  (51)
+.init.delay32                0x95c                0x1c            0x2a  (42)
 
-                 Total "program" memory used (bytes):          0xa62  (2658) <1%
+                 Total "program" memory used (bytes):          0xb34  (2868) 1%
 
 
 "data" Memory  [Origin = 0x1000, Length = 0x6000]
@@ -155,83 +158,87 @@ External Symbols in Program Memory (by address):
 
                   0x000200                  __resetPRI
                   0x00023c                  __psv_init
-                  0x000248                  __data_init_extended
                   0x000248                  __data_init
-                  0x000356                  __T1Interrupt
-                  0x000374                  __ADCAN0Interrupt
-                  0x000398                  __DefaultInterrupt
-                  0x00039e                  _rand
-                  0x00042c                  ___mulp32eds3
-                  0x00042c                  ___mulp32peds3
-                  0x00042c                  ___mulsi3
-                  0x000438                  _main
-                  0x0004d4                  _checkEventType
-                  0x0004f0                  _setClockBits
-                  0x00050c                  _humanInteractionListener
-                  0x00057e                  _currentActionUpdater
-                  0x000594                  _successHandler
-                  0x0005a2                  _failureHandler
-                  0x0005ae                  _scoreHandler
-                  0x0005e8                  _highScoreHandler
-                  0x000602                  _updateSevenSeg
-                  0x0007a6                  _enableDP1
-                  0x0007b4                  _enableDP2
-                  0x0007c2                  _enableDP3
-                  0x0007d0                  _enableDP4
-                  0x0007de                  _setDPbits
-                  0x0007fa                  _display0
-                  0x00080e                  _display1
-                  0x000822                  _display2
-                  0x000836                  _display3
-                  0x00084a                  _display4
-                  0x00085e                  _display5
-                  0x000872                  _display6
-                  0x000886                  _display7
-                  0x00089a                  _display8
-                  0x0008ae                  _display9
-                  0x0008c2                  _listenMic
+                  0x000248                  __data_init_extended
+                  0x00035a                  __T1Interrupt
+                  0x000370                  __ADCAN0Interrupt
+                  0x000382                  __DefaultInterrupt
+                  0x000388                  _rand
+                  0x000416                  ___mulsi3
+                  0x000416                  ___mulp32eds3
+                  0x000416                  ___mulp32peds3
+                  0x000422                  _main
+                  0x000522                  _checkEventType
+                  0x00053e                  _setClockBits
+                  0x00055a                  _humanInteractionListener
+                  0x0005cc                  _currentActionUpdater
+                  0x0005e2                  _successHandler
+                  0x0005f0                  _failureHandler
+                  0x0005fc                  _scoreHandler
+                  0x000636                  _highScoreHandler
+                  0x000650                  _updateSevenSeg
+                  0x0007f4                  _beep
+                  0x000816                  _enableDP1
+                  0x000824                  _enableDP2
+                  0x000832                  _enableDP3
+                  0x000840                  _enableDP4
+                  0x00084e                  _setDPbits
+                  0x00086a                  _display0
+                  0x00087e                  _display1
+                  0x000892                  _display2
+                  0x0008a6                  _display3
+                  0x0008ba                  _display4
+                  0x0008ce                  _display5
+                  0x0008e2                  _display6
+                  0x0008f6                  _display7
+                  0x00090a                  _display8
+                  0x00091e                  _display9
+                  0x000932                  _listenMic
+                  0x00095c                  ___delay32
                   0x02bf00                  __FSEC.sec
 
 External Symbols in Program Memory (by name):
 
-                  0x000374                  __ADCAN0Interrupt
-                  0x000398                  __DefaultInterrupt
+                  0x000370                  __ADCAN0Interrupt
+                  0x000382                  __DefaultInterrupt
                   0x02bf00                  __FSEC.sec
-                  0x000356                  __T1Interrupt
-                  0x00042c                  ___mulp32eds3
-                  0x00042c                  ___mulp32peds3
-                  0x00042c                  ___mulsi3
+                  0x00035a                  __T1Interrupt
+                  0x00095c                  ___delay32
+                  0x000416                  ___mulp32eds3
+                  0x000416                  ___mulp32peds3
+                  0x000416                  ___mulsi3
                   0x000248                  __data_init
                   0x000248                  __data_init_extended
                   0x00023c                  __psv_init
                   0x000200                  __resetPRI
-                  0x0004d4                  _checkEventType
-                  0x00057e                  _currentActionUpdater
-                  0x0007fa                  _display0
-                  0x00080e                  _display1
-                  0x000822                  _display2
-                  0x000836                  _display3
-                  0x00084a                  _display4
-                  0x00085e                  _display5
-                  0x000872                  _display6
-                  0x000886                  _display7
-                  0x00089a                  _display8
-                  0x0008ae                  _display9
-                  0x0007a6                  _enableDP1
-                  0x0007b4                  _enableDP2
-                  0x0007c2                  _enableDP3
-                  0x0007d0                  _enableDP4
-                  0x0005a2                  _failureHandler
-                  0x0005e8                  _highScoreHandler
-                  0x00050c                  _humanInteractionListener
-                  0x0008c2                  _listenMic
-                  0x000438                  _main
-                  0x00039e                  _rand
-                  0x0005ae                  _scoreHandler
-                  0x0004f0                  _setClockBits
-                  0x0007de                  _setDPbits
-                  0x000594                  _successHandler
-                  0x000602                  _updateSevenSeg
+                  0x0007f4                  _beep
+                  0x000522                  _checkEventType
+                  0x0005cc                  _currentActionUpdater
+                  0x00086a                  _display0
+                  0x00087e                  _display1
+                  0x000892                  _display2
+                  0x0008a6                  _display3
+                  0x0008ba                  _display4
+                  0x0008ce                  _display5
+                  0x0008e2                  _display6
+                  0x0008f6                  _display7
+                  0x00090a                  _display8
+                  0x00091e                  _display9
+                  0x000816                  _enableDP1
+                  0x000824                  _enableDP2
+                  0x000832                  _enableDP3
+                  0x000840                  _enableDP4
+                  0x0005f0                  _failureHandler
+                  0x000636                  _highScoreHandler
+                  0x00055a                  _humanInteractionListener
+                  0x000932                  _listenMic
+                  0x000422                  _main
+                  0x000388                  _rand
+                  0x0005fc                  _scoreHandler
+                  0x00053e                  _setClockBits
+                  0x00084e                  _setDPbits
+                  0x0005e2                  _successHandler
+                  0x000650                  _updateSevenSeg
 
 Memory Configuration
 
@@ -297,7 +304,7 @@ LOAD c:/program files/microchip/xc16/v1.70/bin/bin/../../lib\libfx-elf.a
                   0x000002          0x2 SHORT 0x0 ((ABSOLUTE (__reset) >> 0x10) & 0x7f)
                   0x000003          0x2 SHORT 0x0
 
-.text             0x000200        0x238
+.text             0x000200        0x222
  *(.init)
  .init            0x000200         0x48 c:/program files/microchip/xc16/v1.70/bin/bin/../../lib\liblega-pic30-elf.a(crt0_extendedch.o)
                   0x000200                  __resetPRI
@@ -308,27 +315,27 @@ LOAD c:/program files/microchip/xc16/v1.70/bin/bin/../../lib\libfx-elf.a
                   0x000248                  __data_init_extended
  *(.user_init)
  *(.handle)
- .handle          0x0002fa         0x5c jump_table
+ .handle          0x0002fa         0x60 jump_table
  *(.isr*)
- .isr.text        0x000356         0x42 build/default/production/main.o
-                  0x000356                  __T1Interrupt
-                  0x000374                  __ADCAN0Interrupt
- .isr             0x000398          0x4 default_isr
-                  0x000398                  __DefaultInterrupt
+ .isr.text        0x00035a         0x28 build/default/production/main.o
+                  0x00035a                  __T1Interrupt
+                  0x000370                  __ADCAN0Interrupt
+ .isr             0x000382          0x4 default_isr
+                  0x000382                  __DefaultInterrupt
  *(.libc)
  *(.libm)
  *(.libdsp)
  *(.lib*)
  .libpic30_crt_start_mode
-                  0x00039c          0x2 c:/program files/microchip/xc16/v1.70/bin/bin/../../lib\liblega-pic30-elf.a(crt_start_mode_normalch.Leo)
-                  0x00039c                  __crt_start_mode
-                  0x00039c                  __crt_start_mode_normal
- .libc.rand       0x00039e         0x8e c:/program files/microchip/xc16/v1.70/bin/bin/../../lib\liblega-c-elf.a(rand.CH_eo)
-                  0x00039e                  _rand
- .libm.mulsi3     0x00042c          0xc c:/program files/microchip/xc16/v1.70/bin/bin/../../lib\libm-elf.a(mulsi3.cheo)
-                  0x00042c                  ___mulp32peds3
-                  0x00042c                  ___mulsi3
-                  0x00042c                  ___mulp32eds3
+                  0x000386          0x2 c:/program files/microchip/xc16/v1.70/bin/bin/../../lib\liblega-pic30-elf.a(crt_start_mode_normalch.Leo)
+                  0x000386                  __crt_start_mode
+                  0x000386                  __crt_start_mode_normal
+ .libc.rand       0x000388         0x8e c:/program files/microchip/xc16/v1.70/bin/bin/../../lib\liblega-c-elf.a(rand.CH_eo)
+                  0x000388                  _rand
+ .libm.mulsi3     0x000416          0xc c:/program files/microchip/xc16/v1.70/bin/bin/../../lib\libm-elf.a(mulsi3.cheo)
+                  0x000416                  ___mulp32peds3
+                  0x000416                  ___mulsi3
+                  0x000416                  ___mulp32eds3
 
 usercode
  *(usercode)
@@ -389,26 +396,26 @@ __FBTSEQ
 .comment
  *(.comment)
 
-.debug_info       0x000000       0x2a38
+.debug_info       0x000000       0x38ae
  *(.debug_info)
- .debug_info      0x000000       0x2a38 build/default/production/main.o
+ .debug_info      0x000000       0x38ae build/default/production/main.o
  *(.gnu.linkonce.wi.*)
 
-.debug_abbrev     0x000000        0x23b
+.debug_abbrev     0x000000        0x250
  *(.debug_abbrev)
- .debug_abbrev    0x000000        0x23b build/default/production/main.o
+ .debug_abbrev    0x000000        0x250 build/default/production/main.o
 
-.debug_line       0x000000        0x263
+.debug_line       0x000000        0x27c
  *(.debug_line)
- .debug_line      0x000000        0x263 build/default/production/main.o
+ .debug_line      0x000000        0x27c build/default/production/main.o
 
 .debug_frame      0x000000        0x31a
  *(.debug_frame)
  .debug_frame     0x000000        0x31a build/default/production/main.o
 
-.debug_str        0x000000        0x236
+.debug_str        0x000000        0x2ab
  *(.debug_str)
- .debug_str       0x000000        0x236 build/default/production/main.o
+ .debug_str       0x000000        0x2ab build/default/production/main.o
 
 .debug_loc
  *(.debug_loc)
@@ -417,10 +424,10 @@ __FBTSEQ
  *(.debug_macinfo)
 
 .debug_pubnames
-                  0x000000        0x236
+                  0x000000        0x23f
  *(.debug_pubnames)
  .debug_pubnames
-                  0x000000        0x236 build/default/production/main.o
+                  0x000000        0x23f build/default/production/main.o
 
 .debug_ranges
  *(.debug_ranges)
@@ -3939,22 +3946,24 @@ LOAD default_isr
 LOAD data_init
 
 .debug_pubtypes
-                  0x000018        0x31b
+                  0x000018        0x468
  .debug_pubtypes
-                  0x000018        0x31b build/default/production/main.o
+                  0x000018        0x468 build/default/production/main.o
 
 __c30_signature
-                  0x000333         0x1e
+                  0x000480         0x24
  __c30_signature
-                  0x000333          0x6 build/default/production/main.o
+                  0x000480          0x6 build/default/production/main.o
  __c30_signature
-                  0x000339          0x6 c:/program files/microchip/xc16/v1.70/bin/bin/../../lib\liblega-pic30-elf.a(crt0_extendedch.o)
+                  0x000486          0x6 c:/program files/microchip/xc16/v1.70/bin/bin/../../lib\liblega-pic30-elf.a(crt0_extendedch.o)
  __c30_signature
-                  0x00033f          0x6 c:/program files/microchip/xc16/v1.70/bin/bin/../../lib\liblega-pic30-elf.a(data_init_extendedch.o)
+                  0x00048c          0x6 c:/program files/microchip/xc16/v1.70/bin/bin/../../lib\liblega-pic30-elf.a(data_init_extendedch.o)
  __c30_signature
-                  0x000345          0x6 c:/program files/microchip/xc16/v1.70/bin/bin/../../lib\liblega-c-elf.a(rand.CH_eo)
+                  0x000492          0x6 c:/program files/microchip/xc16/v1.70/bin/bin/../../lib\liblega-pic30-elf.a(delay32ch.Leo)
  __c30_signature
-                  0x00034b          0x6 c:/program files/microchip/xc16/v1.70/bin/bin/../../lib\libm-elf.a(mulsi3.cheo)
+                  0x000498          0x6 c:/program files/microchip/xc16/v1.70/bin/bin/../../lib\liblega-c-elf.a(rand.CH_eo)
+ __c30_signature
+                  0x00049e          0x6 c:/program files/microchip/xc16/v1.70/bin/bin/../../lib\libm-elf.a(mulsi3.cheo)
 
 .nbss               0x1000          0xa
  .nbss              0x1000          0xa build/default/production/main.o
@@ -4048,34 +4057,39 @@ __c30_signature
  .ivt._ADCAN0Interrupt
                   0x0000ca          0x2 build/default/production/main.o
 
-.text             0x000438        0x492
- .text            0x000438        0x492 build/default/production/main.o
-                  0x000438                  _main
-                  0x0004d4                  _checkEventType
-                  0x0004f0                  _setClockBits
-                  0x00050c                  _humanInteractionListener
-                  0x00057e                  _currentActionUpdater
-                  0x000594                  _successHandler
-                  0x0005a2                  _failureHandler
-                  0x0005ae                  _scoreHandler
-                  0x0005e8                  _highScoreHandler
-                  0x000602                  _updateSevenSeg
-                  0x0007a6                  _enableDP1
-                  0x0007b4                  _enableDP2
-                  0x0007c2                  _enableDP3
-                  0x0007d0                  _enableDP4
-                  0x0007de                  _setDPbits
-                  0x0007fa                  _display0
-                  0x00080e                  _display1
-                  0x000822                  _display2
-                  0x000836                  _display3
-                  0x00084a                  _display4
-                  0x00085e                  _display5
-                  0x000872                  _display6
-                  0x000886                  _display7
-                  0x00089a                  _display8
-                  0x0008ae                  _display9
-                  0x0008c2                  _listenMic
+.text             0x000422        0x518
+ .text            0x000422        0x518 build/default/production/main.o
+                  0x000422                  _main
+                  0x000522                  _checkEventType
+                  0x00053e                  _setClockBits
+                  0x00055a                  _humanInteractionListener
+                  0x0005cc                  _currentActionUpdater
+                  0x0005e2                  _successHandler
+                  0x0005f0                  _failureHandler
+                  0x0005fc                  _scoreHandler
+                  0x000636                  _highScoreHandler
+                  0x000650                  _updateSevenSeg
+                  0x0007f4                  _beep
+                  0x000816                  _enableDP1
+                  0x000824                  _enableDP2
+                  0x000832                  _enableDP3
+                  0x000840                  _enableDP4
+                  0x00084e                  _setDPbits
+                  0x00086a                  _display0
+                  0x00087e                  _display1
+                  0x000892                  _display2
+                  0x0008a6                  _display3
+                  0x0008ba                  _display4
+                  0x0008ce                  _display5
+                  0x0008e2                  _display6
+                  0x0008f6                  _display7
+                  0x00090a                  _display8
+                  0x00091e                  _display9
+                  0x000932                  _listenMic
 
-.dinit            0x0008ca         0x22
- .dinit           0x0008ca         0x22 data_init
+.dinit            0x00093a         0x22
+ .dinit           0x00093a         0x22 data_init
+
+.init.delay32     0x00095c         0x1c
+ .init.delay32    0x00095c         0x1c c:/program files/microchip/xc16/v1.70/bin/bin/../../lib\liblega-pic30-elf.a(delay32ch.Leo)
+                  0x00095c                  ___delay32

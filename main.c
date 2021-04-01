@@ -152,11 +152,31 @@ int main(void)
     //outputs
     TRISBbits.TRISB2 = 0;   //B2 is output (green LED)
     TRISCbits.TRISC3 = 0;   //C3 is output (red LED)
-    //TRISDbits.TRISD15 = 1; //D15 is output (Speaker)
+    TRISDbits.TRISD15 = 0; //D15 is output (Speaker)
     
     //Speaker
+    
+    //Configure the source clock for the APLL
     ACLKCON1bits.FRCSEL = 1;
-    ACLKCON1bits.APLLPRE = 1;
+    // Configure the APLL prescalar, APLL feedback divider, and both APLL postscalars
+    ACLKCON1bits.APLLPRE = 1; //N1 = 1
+    APLLFBD1bits.APLLFBDIV = 125; // M = 125
+    APLLDIV1bits.APOST1DIV = 2; // N2 = 2
+    APLLDIV1bits.APOST2DIV = 1; // N3 = 1
+    // Enable APLL
+    ACLKCON1bits.APLLEN = 1;
+    
+    //DAC
+    DACCTRL1Lbits.CLKSEL = 2;
+    DACCTRL1Lbits.DACON = 1;
+    DAC1CONLbits.DACEN = 1;
+    DAC1CONLbits.DACOEN = 1;
+    //Triangle Wave mode
+    DAC1DATLbits.DACLOW = 0xCD; // Lower data value
+    DAC1DATHbits.DACDAT = 0xF32; // Upper data value
+    SLP1DATbits.SLPDAT = 0x1; // Slope rate, counts per step
+    SLP1CONHbits.TWME = 1;
+    SLP1CONHbits.SLOPEN = 1;
     
     highScore = 0; //initialize high score to 0
     
@@ -431,6 +451,16 @@ void updateSevenSeg(int newScore)
     setDPbits();
 }
 
+void beep(int numBeeps)
+{
+    int i = 0;
+    for(i; i<numBeeps; i++)
+    {
+        LATDbits.LATD15 = 1;
+        __delay_ms(150);
+        LATDbits.LATD15 = 0;
+    }
+}
 
 void enableDP1()
 {
