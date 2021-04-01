@@ -85,10 +85,10 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <libpic30.h>
 #include <stdbool.h>
 #define FCY 2000000UL
 #define FOSC 4000000UL // FRC divided by 2 from 8MHz to 4MHz
+#include <libpic30.h>
 
 /*
 clock stuff
@@ -132,7 +132,7 @@ int level = 1;
 int fail = 0;
 int listening = 1; 
 bool display7SEG = false;
-unsigned dataAN0;
+int dataAN0;
 
 
 int main(void) 
@@ -177,10 +177,10 @@ int main(void)
     ADCON5Lbits.C0PWR = 1;
     ADCON3Hbits.C0EN = 1;
     ADCON1Hbits.SHRRES = 11;   // shared ADC core resolution selection bits
-    //ADCON3Lbits.CNVCHSEL = 1; // channel number selection for software individual channel conversion trigger bits
-    //ADCON3Lbits.SHRSAMP = 0;    // shared ADC core samples an analog input specified by CNVSCHSEL bits
+    ADCON3Lbits.CNVCHSEL = 1; // channel number selection for software individual channel conversion trigger bits
+    ADCON3Lbits.SHRSAMP = 0;    // shared ADC core samples an analog input specified by CNVSCHSEL bits
     
-    ADCON3Hbits.CLKSEL = 01; // ADC Module clock source selection bits set to FOSC
+    ADCON3Hbits.CLKSEL = 1; // ADC Module clock source selection bits set to FOSC
     ADCON3Lbits.REFSEL = 0;
     ADCON1Hbits.FORM = 1;   // fractional data output format bit set to integer
     ADMOD0Lbits.SIGN0 = 0;
@@ -189,8 +189,8 @@ int main(void)
     _ADCAN0IF = 0; // clear interrupt flag for AN0
     _ADCAN0IE = 1; // enable interrupt for AN0
     
-    ADTRIG0Lbits.TRGSRC0 = 13;
-
+    ADTRIG0Lbits.TRGSRC0 = 0b00001;
+    
     while (1) 
     {
         if (PORTCbits.RC0 == 0)         //if switch is on
@@ -214,6 +214,7 @@ int main(void)
             
         }
     }
+
     return 0;
 }
 
@@ -241,15 +242,6 @@ void setClockBits()
     TMR1 = 0x0;         // Clear timer register
 }
 
-void startMic()
-{
-    /*
-    T2CONbits.TCS = 0; // clock from peripheral clock
-    T2CONbits.TCKPS = 0; // 1:1 prescale
-    PR2 = 0x8000; // rollover every 0x8000 clocks
-    T2CONbits.TON = 1;
-     */
-}
 void humanInteractionListener()
 {
     listening = 1; 
@@ -289,11 +281,8 @@ void humanInteractionListener()
 // 1 = push button
 // 2 = analog stick
 // 3 = mic
-
 void currentActionUpdater()
 {
-//    time_t t;
-//    srand((unsigned) time(&t));
     currentEvent = rand() % 3;
     T1CONbits.TON = 1; //starting timer
 }
@@ -399,7 +388,7 @@ void updateSevenSeg(int newScore)
         
         if(i == 0)
         {
-            __delay_ms(10);
+            __delay_ms(5);
             enableDP1();
             currentDigit = digit0;
             i++;
@@ -408,7 +397,7 @@ void updateSevenSeg(int newScore)
         {
             if(digit1 != -1)
             {
-                __delay_ms(10);
+                __delay_ms(5);
                 enableDP2();
                 currentDigit = digit1;
             }
@@ -418,7 +407,7 @@ void updateSevenSeg(int newScore)
         {
             if(digit2 != -1)
             {
-                __delay_ms(10);
+                __delay_ms(5);
                 enableDP3();
                 currentDigit = digit2;
             }
@@ -428,7 +417,7 @@ void updateSevenSeg(int newScore)
         {
             if(digit3 != -1)
             {
-                __delay_ms(10);
+                __delay_ms(5);
                 enableDP4();
                 currentDigit = digit3;
             }
@@ -599,28 +588,18 @@ void display9()
 
 // microphone read (analog)
 // not using function prototype since we want to call randomly
-unsigned int listenMic(void){
-    //ADCON1bits.SAMP = 1;    // enable sampling
-    __delay_ms(0xFFFF - 10000*level); // wait for user to make noise
-    //ADCON1bits.SAMP = 0;    // converting sample
-    
-    /*while(!ADCON1bits.DONE){
-        return ADCBUF0;
-    }*/
+void listenMic(void)
+{
+    ADCON3Lbits.SWCTRG = 1;
 }
 
 // Timer1 Interrupt
 void __attribute__((__interrupt__,no_auto_psv)) _T1Interrupt(void)
 {
-    if(display7SEG)
-    {
-        display7SEG = false;
-    }
-    else
-    {
-        fail = 1;
-        listening = 0;
-    }
+
+    display7SEG = false;
+    fail = 1;
+    listening = 0;
 
     T1CONbits.TON = 0;      //turn timer off 
     IFS0bits.T1IF = 0;      
@@ -629,6 +608,7 @@ void __attribute__((__interrupt__,no_auto_psv)) _T1Interrupt(void)
 // ADC AN0 ISR
 void __attribute__((interrupt, no_auto_psv)) _ADCAN0Interrupt(void)
 {
+    ADCON3Lbits.SWCTRG = 0;
     dataAN0 = ADCBUF0; // read conversion result
     _ADCAN0IF = 0; // clear interrupt flag
 }
