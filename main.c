@@ -146,8 +146,13 @@ int main(void)
     TRISCbits.TRISC0 = 1;  //C0 is input (on/off switch)
     TRISCbits.TRISC14 = 1; //C14 is input (pushbutton)
     TRISBbits.TRISB15 = 1; //B15 is input (analog stick)
+    
+    //MIC
     ANSELAbits.ANSELA0 = 0;
     TRISAbits.TRISA0 = 1; // RA0 AN
+    TRISAbits.TRISA1 = 1; // MIC-
+    TRISAbits.TRISA2 = 1; // MIC+
+    LATAbits.LATA2 = 1; 
     
     //outputs
     TRISBbits.TRISB2 = 0;   //B2 is output (green LED)
@@ -214,10 +219,10 @@ int main(void)
     _ADCAN0IE = 1; // enable interrupt for AN0
     
     ADTRIG0Lbits.TRGSRC0 = 0b00001;
+    listenMic();
     
     while (1) 
     {
-        listenMic();
         if (PORTCbits.RC0 == 0)         //if switch is on
         {    
             fail = 0;       //initialize fail to 0;
@@ -628,10 +633,8 @@ void listenMic(void)
     LATAbits.LATA0 = 1;
     ANSELAbits.ANSELA0 = 1;
     ADCBUF0 = 0x0;
-    __delay_ms(1500);
     ADCON3Lbits.SWCTRG = 1;
-    __delay_ms(1000);
-    ANSELAbits.ANSELA0 = 0;
+    __delay_ms(500);
     updateSevenSeg(dataAN0);
 }
 
@@ -650,8 +653,10 @@ void __attribute__((__interrupt__,no_auto_psv)) _T1Interrupt(void)
 // ADC AN0 ISR
 void __attribute__((interrupt, no_auto_psv)) _ADCAN0Interrupt(void)
 {
-    dataAN0 = ADCBUF0; // read conversion result
+    __delay_ms(100);
     LATAbits.LATA0 = 0;
+    ANSELAbits.ANSELA0 = 0;
+    dataAN0 = ADCBUF0; // read conversion result
     ADCBUF0 = 0x0;
     _ADCAN0IF = 0; // clear interrupt flag
 }
