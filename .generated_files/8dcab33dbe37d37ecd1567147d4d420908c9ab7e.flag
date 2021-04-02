@@ -21,26 +21,7 @@ PATH:=C:/Program Files/Microchip/MPLABX/v5.45/mplab_platform/platform/../mplab_i
 # Path to java used to run MPLAB X when this makefile was created
 MP_JAVA_PATH="C:\Program Files\Microchip\MPLABX\v5.45\sys\java\zulu8.40.0.25-ca-fx-jre8.0.222-win_x64/bin/"
 OS_CURRENT="$(shell uname -s)"
-<<<<<<< HEAD:.generated_files/8dcab33dbe37d37ecd1567147d4d420908c9ab7e.flag
 MP_CC="C:\Program Files\Microchip\xc16\v1.70\bin\xc16-gcc.exe"
-=======
-<<<<<<< HEAD:.generated_files/d698de772bfe72115858c985878dd5dfedfd52a1.flag
-MP_CC="C:\Program Files\Microchip\xc16\v1.61\bin\xc16-gcc.exe"
-# MP_CPPC is not defined
-# MP_BC is not defined
-MP_AS="C:\Program Files\Microchip\xc16\v1.61\bin\xc16-as.exe"
-MP_LD="C:\Program Files\Microchip\xc16\v1.61\bin\xc16-ld.exe"
-MP_AR="C:\Program Files\Microchip\xc16\v1.61\bin\xc16-ar.exe"
-DEP_GEN=${MP_JAVA_PATH}java -jar "C:/Program Files/Microchip/MPLABX/v5.45/mplab_platform/platform/../mplab_ide/modules/../../bin/extractobjectdependencies.jar"
-MP_CC_DIR="C:\Program Files\Microchip\xc16\v1.61\bin"
-# MP_CPPC_DIR is not defined
-# MP_BC_DIR is not defined
-MP_AS_DIR="C:\Program Files\Microchip\xc16\v1.61\bin"
-MP_LD_DIR="C:\Program Files\Microchip\xc16\v1.61\bin"
-MP_AR_DIR="C:\Program Files\Microchip\xc16\v1.61\bin"
-=======
-MP_CC="/Applications/microchip/xc16/v1.61/bin/xc16-gcc"
->>>>>>> dc2b1ddc816fe7a424b9d29f3fdb9c600dc9a0e8:.generated_files/cdcbca7568301a43ece45bab4391310f72cfb27b.flag
 # MP_CPPC is not defined
 # MP_BC is not defined
 MP_AS="C:\Program Files\Microchip\xc16\v1.70\bin\xc16-as.exe"
@@ -50,15 +31,8 @@ DEP_GEN=${MP_JAVA_PATH}java -jar "C:/Program Files/Microchip/MPLABX/v5.45/mplab_
 MP_CC_DIR="C:\Program Files\Microchip\xc16\v1.70\bin"
 # MP_CPPC_DIR is not defined
 # MP_BC_DIR is not defined
-<<<<<<< HEAD:.generated_files/8dcab33dbe37d37ecd1567147d4d420908c9ab7e.flag
 MP_AS_DIR="C:\Program Files\Microchip\xc16\v1.70\bin"
 MP_LD_DIR="C:\Program Files\Microchip\xc16\v1.70\bin"
 MP_AR_DIR="C:\Program Files\Microchip\xc16\v1.70\bin"
-=======
-MP_AS_DIR="/Applications/microchip/xc16/v1.61/bin"
-MP_LD_DIR="/Applications/microchip/xc16/v1.61/bin"
-MP_AR_DIR="/Applications/microchip/xc16/v1.61/bin"
->>>>>>> 4332c2575fc2954e9165dcd021987c4139a1c771:.generated_files/cdcbca7568301a43ece45bab4391310f72cfb27b.flag
->>>>>>> dc2b1ddc816fe7a424b9d29f3fdb9c600dc9a0e8:.generated_files/cdcbca7568301a43ece45bab4391310f72cfb27b.flag
 # MP_BC_DIR is not defined
 DFP_DIR=C:/Program Files/Microchip/MPLABX/v5.45/packs/Microchip/dsPIC33CK-MP_DFP/1.5.135
