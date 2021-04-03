@@ -732,18 +732,3 @@ void __attribute__((interrupt, no_auto_psv)) _ADCAN0Interrupt(void)
     dataAN0 = ADCBUF0; // read conversion result
     _ADCAN0IF = 0; // clear interrupt flag
 }
-
-
-// ADC AN13 ISR (SHARED CORE)
-void __attribute__((interrupt, no_auto_psv)) _ADCAN13Interrupt(void)
-{
-    dataAN13 = ADCBUF13;
-    _ADCAN13IF = 0; // clear interrupt flag
-}
-
-// ADC AN14 ISR (SHARED CORE)
-void __attribute__((interrupt, no_auto_psv)) _ADCAN14Interrupt(void)
-{
-    dataAN13 = ADCBUF14;
-    _ADCAN14IF = 0; // clear interrupt flag
-}
