@@ -88,25 +88,17 @@
 #include <stdbool.h>
 #define FCY 2000000UL
 #define FOSC 4000000UL // FRC divided by 2 from 8MHz to 4MHz
+#define RAND_MAX 3
+
 #include <libpic30.h>
 
-/*
-clock stuff
-T1CON = 0x0;
-T1CONbits.TECS = 3;
-T1CONbits.TCKPS = 3;
-T1CONbits.TCS = 0;
-TMR1 = 0x0;
-PR1 = 0xFFFF;
-IEC0bits.T1IE = 1;
-IFS0bits.T1IF = 0;
-T1CONbits.TON = 1;
-*/
 
 //Green LED     CS_1
 //Red LED       CS_2
 //Push Button   INT_1
-//Analog Stick  INT_2
+//ON OFF  INT_2 XXX
+//Analog Stick MISO_2 RC1 AN13
+//Analog Stick MOSI_2 RC2 AN14
 
 /*
  * 7SEG 
@@ -132,122 +124,41 @@ int level = 1;
 int fail = 0;
 int listening = 1; 
 bool display7SEG = false;
+int firstEvent = 1;
 int dataAN0;
+int dataAN13;
+int dataAN14;
+int timerCheck = 0;
 
 
 int main(void) 
 {
-    CLKDIVbits.FRCDIV = 1; // Divide FRC by 2
- 
-    IEC0bits.T1IE = 1;
-    IFS0bits.T1IF = 0;
-    
-    //inputs
-    TRISCbits.TRISC0 = 1;  //C0 is input (on/off switch)
-    TRISCbits.TRISC14 = 1; //C14 is input (pushbutton)
-    TRISBbits.TRISB15 = 1; //B15 is input (analog stick)
-    
-    //outputs
-    TRISBbits.TRISB2 = 0;   //B2 is output (green LED)
-    TRISCbits.TRISC3 = 0;   //C3 is output (red LED)
-    TRISDbits.TRISD15 = 0; //D15 is output (Speaker)
-    
-    //Speaker
-    
-    //Configure the source clock for the APLL
-    ACLKCON1bits.FRCSEL = 1;
-    // Configure the APLL prescalar, APLL feedback divider, and both APLL postscalars
-    ACLKCON1bits.APLLPRE = 1; //N1 = 1
-    APLLFBD1bits.APLLFBDIV = 125; // M = 125
-    APLLDIV1bits.APOST1DIV = 2; // N2 = 2
-    APLLDIV1bits.APOST2DIV = 1; // N3 = 1
-    // Enable APLL
-    ACLKCON1bits.APLLEN = 1;
-    
-    //DAC
-    DACCTRL1Lbits.CLKSEL = 2;
-    DACCTRL1Lbits.DACON = 1;
-    DAC1CONLbits.DACEN = 1;
-    DAC1CONLbits.DACOEN = 1;
-    //Triangle Wave mode
-    DAC1DATLbits.DACLOW = 0xCD; // Lower data value
-    DAC1DATHbits.DACDAT = 0xF32; // Upper data value
-    SLP1DATbits.SLPDAT = 0x1; // Slope rate, counts per step
-    SLP1CONHbits.TWME = 1;
-    SLP1CONHbits.SLOPEN = 1;
+    setup(); 
     
     highScore = 0; //initialize high score to 0
     
-    //7SEG
-    // DP# EN bits
-    TRISDbits.TRISD4 = 0; // 1st EN from left SDA_1 RD4
-    TRISDbits.TRISD3 = 0; // 2nd SCL_1 RD3
-    TRISBbits.TRISB12 = 0; // 3rd TX_1 RB12
-    TRISCbits.TRISC15= 0; // 4th RX_1 RC15 PIN 6
-    
-    // A-G
-    TRISCbits.TRISC13= 0; // A PWM_1 RC13 PIN 11
-    TRISCbits.TRISC0= 0;//B AN_1 RC0 PIN 7
-    TRISCbits.TRISC7= 0;//C RST_1 RC7 PIN 4
-    TRISBbits.TRISB7= 0;//D SCK_1 RB7 PIN 2
-    TRISBbits.TRISB8= 0;//E MISO_1 RB8 PIN 1
-    TRISBbits.TRISB9= 0;//F MOSI_1 RB9 PIN 10
-    TRISCbits.TRISC8= 0;//G SDA_2 RC8 PIN 5
-    
-    //MIC
-    ANSELAbits.ANSELA0 = 1;
-    ANSELAbits.ANSELA1 = 1;
-    ANSELAbits.ANSELA2 = 1;
-    TRISAbits.TRISA0 = 1; // RA0 AN MIC_IN_ADC
-    TRISAbits.TRISA1 = 1; // MIC-
-    TRISAbits.TRISA2 = 1; // MIC+
-    
-    
-    ADCON5Hbits.WARMTIME = 15;
-    ADCON1Lbits.ADON = 1;  // enable
-    ADCON5Lbits.C0PWR = 1;
-    while(ADCON5Lbits.C0RDY == 0);
-    ADCON3Hbits.C0EN = 1;
-    
-    ADCON3Hbits.CLKSEL = 1; // ADC Module clock source selection bits set to FOSC
-    ADCON3Hbits.CLKDIV = 0; // no clock divider (1:1)
-    
-    ADCORE0Hbits.ADCS = 0; // clock divider (1:2)
-    ADCORE1Hbits.ADCS = 0; // clock divider (1:2)
-    
-    ADCON3Lbits.REFSEL = 0;
-    
-    ADCON1Hbits.FORM = 0;   // fractional data output format bit set to integer
-    ADMOD0Lbits.SIGN0 = 0;
-    ADMOD0Lbits.DIFF0 = 0;
-    ADIELbits.IE0 = 1;
-    _ADCAN0IF = 0; // clear interrupt flag for AN0
-    _ADCAN0IE = 1; // enable interrupt for AN0
-    
-    ADTRIG0Lbits.TRGSRC0 = 0b00001; // Select software trigger
-    
-    
     while (1) 
     {
-        if (PORTCbits.RC0 == 0)         //if switch is on
+        if (PORTBbits.RB15 == 0)         //if switch is on
         {    
             fail = 0;       //initialize fail to 0;
             
-            //put all code in here
-            PR1 = 0xFFFF - 10000*level;       // Load period register - decrease time per level
+            if(firstEvent)
+            {
+                currentActionUpdater();       // Generate event
+                firstEvent = 0;
+            }
             
-            currentActionUpdater();       // Generate event
             humanInteractionListener();     // listen for user input
         }
         else {                      //if switch is off
             scoreHandler(0);        //reset score
             level = 1;              //reset level
+            firstEvent = 1;         //reset first event
             
             //turn off all outputs
             LATBbits.LATB2 = 0;     //Turn off green LED
             LATCbits.LATC3 = 0;     //Turn off red LED
-            //turn off 7 seg
-            
         }
     }
 
@@ -271,44 +182,57 @@ int checkEventType(int userEvent)
 
 void setClockBits()
 {
-    T1CON = 0x0;        // Stop timer and clear control register,               
-    T1CONbits.TECS = 3; // set prescaler at 1:1, internal clock source 
+    T1CON = 0x0;
+    T1CONbits.TECS = 3;
     T1CONbits.TCKPS = 3;
     T1CONbits.TCS = 0;
-    TMR1 = 0x0;         // Clear timer register
+    TMR1 = 0x0;
+    PR1 = 0xFFFF - 1000*level;       // Load period register - decrease time per level
+    IEC0bits.T1IE = 1;
+    IFS0bits.T1IF = 0;
+    T1CONbits.TON = 1;
 }
 
 void humanInteractionListener()
 {
     listening = 1; 
-    int eventType = 0; 
     int result = 0; // 1 == pass, 0 == fail
+    timerCheck = 0;
+    int micLevel = 0;
     
-    while(listening){
+    while(listening && PORTBbits.RB15 == 0){
+        
         if(PORTCbits.RC14 == 0)
         { //push button has been clicked
             listening = 0; //stop listening
             result = checkEventType(1);
         }
-        if(PORTBbits.RB14 == 0)
+        
+        if(PORTBbits.RB14 == 0 || PORTBbits.RB13 == 0) // Analog Stick
         {
             listening = 0; //stop listening 
             result = checkEventType(2);
         }
         
         listenMic();
+        if(micLevel == 0)
+        {
+            micLevel = dataAN0 + 20;
+        }
+        
         // if mic peeks above 800 and its looking for a mic event
-        if(dataAN0 >= 800 && currentEvent == 3)
+        if(dataAN0 >= micLevel && currentEvent == 3 && micLevel != 0)
         {
             listening = 0; 
             result = checkEventType(3); 
         }
     }
-    if(result == 0 || fail == 1)
+    
+    if(result == 0)
     {
         failureHandler();
     }
-    else if (result == 1)
+    else if (result == 1 && timerCheck == 0)
     {
         successHandler();
     }
@@ -322,17 +246,23 @@ void humanInteractionListener()
 void currentActionUpdater()
 {
     currentEvent = (rand() % 3) + 1;
-    T1CONbits.TON = 1; //starting timer
+    beep(currentEvent);
+    setClockBits();
 }
 
 void successHandler()
 {
-    currentActionUpdater();
+    T1CONbits.TON = 0; //reset clock
     scoreHandler(1);
+    LATBbits.LATB2 = 1;     //Turn on green LED
+    __delay_ms(10);
+    LATBbits.LATB2 = 0;     //Turn off green LED
+    currentActionUpdater();
 }
 
 void failureHandler()
 {
+    LATCbits.LATC3 = 1;     //Turn on red LED
     scoreHandler(0);
 }
 
@@ -345,12 +275,12 @@ void scoreHandler(int result)
         {
             level++;
         }
-        highScoreHandler(score);
         //Increment and keep going
         //Every 5 levels speedup
     }
     else if(result == 0)
     {
+        highScoreHandler(score);
         score = 0;
         //Reset score and tell game to stop
     }
@@ -474,6 +404,8 @@ void beep(int numBeeps)
         __delay_ms(150);
         LATDbits.LATD15 = 0;
     }
+    
+    __delay_ms(1500);
 }
 
 void enableDP1()
@@ -634,8 +566,143 @@ void display9()
     LATCbits.LATC8= 0;//G SDA_2 RC8 PIN 5
 }
 
+void setup()
+{
+    CLKDIVbits.FRCDIV = 1; // Divide FRC by 2
+ 
+    IEC0bits.T1IE = 1;
+    IFS0bits.T1IF = 0;
+    
+    //inputs
+    TRISBbits.TRISB15 = 1;  //AN_2 D10 is input (on/off switch)
+    TRISCbits.TRISC14 = 1; //C14 is input (pushbutton)
+    TRISBbits.TRISB14 = 1; //Analog Stick RB14 RX_2
+    TRISBbits.TRISB13 = 1; //Analog Stick RB13 TX_2
+    
+    //outputs
+    TRISBbits.TRISB2 = 0;   //B2 is output (green LED)
+    TRISCbits.TRISC3 = 0;   //C3 is output (red LED)
+    TRISDbits.TRISD15 = 0; //D15 is output (Speaker)
+    
+    setupSpeaker();
+    setupSevenSeg();
+    setupMic();
+}
+
+void setupSpeaker()
+{
+    //Speaker
+    
+    //Configure the source clock for the APLL
+    ACLKCON1bits.FRCSEL = 1;
+    // Configure the APLL prescalar, APLL feedback divider, and both APLL postscalars
+    ACLKCON1bits.APLLPRE = 1; //N1 = 1
+    APLLFBD1bits.APLLFBDIV = 125; // M = 125
+    APLLDIV1bits.APOST1DIV = 2; // N2 = 2
+    APLLDIV1bits.APOST2DIV = 1; // N3 = 1
+    // Enable APLL
+    ACLKCON1bits.APLLEN = 1;
+    
+    //DAC
+    DACCTRL1Lbits.CLKSEL = 2;
+    DACCTRL1Lbits.DACON = 1;
+    DAC1CONLbits.DACEN = 1;
+    DAC1CONLbits.DACOEN = 1;
+    //Triangle Wave mode
+    DAC1DATLbits.DACLOW = 0xCD; // Lower data value
+    DAC1DATHbits.DACDAT = 0xF32; // Upper data value
+    SLP1DATbits.SLPDAT = 0x1; // Slope rate, counts per step
+    SLP1CONHbits.TWME = 1;
+    SLP1CONHbits.SLOPEN = 1;
+}
+
+void setupSevenSeg()
+{
+    //7SEG
+    // DP# EN bits
+    TRISDbits.TRISD4 = 0; // 1st EN from left SDA_1 RD4
+    TRISDbits.TRISD3 = 0; // 2nd SCL_1 RD3
+    TRISBbits.TRISB12 = 0; // 3rd TX_1 RB12
+    TRISCbits.TRISC15= 0; // 4th RX_1 RC15 PIN 6
+    
+    // A-G
+    TRISCbits.TRISC13= 0; // A PWM_1 RC13 PIN 11
+    TRISCbits.TRISC0= 0;//B AN_1 RC0 PIN 7
+    TRISCbits.TRISC7= 0;//C RST_1 RC7 PIN 4
+    TRISBbits.TRISB7= 0;//D SCK_1 RB7 PIN 2
+    TRISBbits.TRISB8= 0;//E MISO_1 RB8 PIN 1
+    TRISBbits.TRISB9= 0;//F MOSI_1 RB9 PIN 10
+    TRISCbits.TRISC8= 0;//G SDA_2 RC8 PIN 5
+}
+
+void setupMic()
+{
+    //MIC
+    ANSELAbits.ANSELA0 = 1;
+    ANSELAbits.ANSELA1 = 1;
+    ANSELAbits.ANSELA2 = 1;
+    TRISAbits.TRISA0 = 1; // RA0 AN MIC_IN_ADC
+    TRISAbits.TRISA1 = 1; // MIC-
+    TRISAbits.TRISA2 = 1; // MIC+
+    
+    
+    ADCON5Hbits.WARMTIME = 15;
+    ADCON1Lbits.ADON = 1;  // enable
+    ADCON5Lbits.C0PWR = 1;
+    while(ADCON5Lbits.C0RDY == 0);
+    ADCON3Hbits.C0EN = 1;
+    
+    ADCON3Hbits.CLKSEL = 1; // ADC Module clock source selection bits set to FOSC
+    ADCON3Hbits.CLKDIV = 0; // no clock divider (1:1)
+    
+    ADCORE0Hbits.ADCS = 0; // clock divider (1:2)
+    ADCORE1Hbits.ADCS = 0; // clock divider (1:2)
+    
+    ADCON3Lbits.REFSEL = 0;
+    
+    ADCON1Hbits.FORM = 0;   // fractional data output format bit set to integer
+    ADMOD0Lbits.SIGN0 = 0;
+    ADMOD0Lbits.DIFF0 = 0;
+    ADIELbits.IE0 = 1;
+    _ADCAN0IF = 0; // clear interrupt flag for AN0
+    _ADCAN0IE = 1; // enable interrupt for AN0
+    
+    ADTRIG0Lbits.TRGSRC0 = 0b00001; // Select software trigger
+}
+
+/*
+ * If anyone wants to do analog stick adc. Not neccessary.
+//Analog Stick MISO_2 RC1 AN13
+//Analog Stick MOSI_2 RC2 AN14
+void setupAnalogStick()
+{
+    ANSELCbits.ANSELC1 = 1;
+    ANSELCbits.ANSELC2 = 1;
+    TRISBbits.TRISB14 = 1; //Analog Stick MISO_2 RC1 AN13
+    TRISCbits.TRISC2 = 1; //Analog Stick MOSI_2 RC2 AN14
+   
+    ADCON5Lbits.SHRPWR = 1;
+    while(ADCON5Lbits.SHRRDY == 0);
+    ADCON3Hbits.SHREN = 1;
+    
+    ADMOD0Hbits.SIGN13 = 0;
+    ADMOD0Hbits.DIFF13 = 0;
+    ADMOD0Hbits.SIGN14 = 0;
+    ADMOD0Hbits.DIFF14 = 0;
+    
+    ADIELbits.IE13 = 1;
+    ADIELbits.IE14 = 1;
+    _ADCAN13IF = 0; // clear interrupt flag for AN13
+    _ADCAN13IE = 1; // enable interrupt for AN13
+    _ADCAN14IF = 0; // clear interrupt flag for AN14
+    _ADCAN14IE = 1; // enable interrupt for AN14
+    
+    ADTRIG0Lbits.TRGSRC13 = 0b00001; // Select software trigger
+    ADTRIG0Lbits.TRGSRC14 = 0b00001; // Select software trigger
+}
+*/
+
 // microphone read (analog)
-// not using function prototype since we want to call randomly
 void listenMic(void)
 {
     ADCON3Lbits.SWCTRG = 1;
@@ -645,11 +712,16 @@ void listenMic(void)
 // Timer1 Interrupt
 void __attribute__((__interrupt__,no_auto_psv)) _T1Interrupt(void)
 {
-
-    display7SEG = false;
-    fail = 1;
-    listening = 0;
-
+    if(display7SEG)
+    {
+        display7SEG = false;
+    }
+    else
+    {
+        listening = 0;
+        timerCheck = 1;
+    }
+    
     T1CONbits.TON = 0;      //turn timer off 
     IFS0bits.T1IF = 0;      
 }
@@ -659,4 +731,19 @@ void __attribute__((interrupt, no_auto_psv)) _ADCAN0Interrupt(void)
 {
     dataAN0 = ADCBUF0; // read conversion result
     _ADCAN0IF = 0; // clear interrupt flag
+}
+
+
+// ADC AN13 ISR (SHARED CORE)
+void __attribute__((interrupt, no_auto_psv)) _ADCAN13Interrupt(void)
+{
+    dataAN13 = ADCBUF13;
+    _ADCAN13IF = 0; // clear interrupt flag
+}
+
+// ADC AN14 ISR (SHARED CORE)
+void __attribute__((interrupt, no_auto_psv)) _ADCAN14Interrupt(void)
+{
+    dataAN13 = ADCBUF14;
+    _ADCAN14IF = 0; // clear interrupt flag
 }
