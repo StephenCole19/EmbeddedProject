@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project>
-  <executable name="dist/default/production/EmbeddedProject.production.elf">
+  <executable name="dist/default/debug/EmbeddedProject.debug.elf">
     <memory name="data">
       <units>bytes</units>
       <length>24576</length>
-      <used>168</used>
-      <free>24408</free>
+      <used>248</used>
+      <free>24328</free>
     </memory>
     <memory name="program">
       <units>bytes</units>
       <length>269184</length>
-      <used>3933</used>
-      <free>265251</free>
+      <used>3849</used>
+      <free>265335</free>
     </memory>
   </executable>
 </project>

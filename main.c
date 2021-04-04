@@ -88,7 +88,7 @@
 #include <stdbool.h>
 #define FCY 2000000UL
 #define FOSC 4000000UL // FRC divided by 2 from 8MHz to 4MHz
-#define RAND_MAX 3
+#define RAND_MAX 4
 
 #include <libpic30.h>
 
@@ -129,6 +129,7 @@ int dataAN0;
 int dataAN13;
 int dataAN14;
 int timerCheck = 0;
+int command = -1;
 
 
 int main(void) 
@@ -226,6 +227,13 @@ void humanInteractionListener()
             listening = 0; 
             result = checkEventType(3); 
         }
+        
+        if(getCommand() != -1)
+        {
+            listening = 0;
+            command = -1;
+            result = checkEventType(4);
+        }
     }
     
     if(result == 0)
@@ -245,7 +253,7 @@ void humanInteractionListener()
 // 3 = mic
 void currentActionUpdater()
 {
-    currentEvent = (rand() % 3) + 1;
+    currentEvent = (rand() % 4) + 1;
     beep(currentEvent);
     setClockBits();
 }
@@ -581,12 +589,13 @@ void setup()
     
     //outputs
     TRISBbits.TRISB2 = 0;   //B2 is output (green LED)
-    TRISCbits.TRISC3 = 0;   //C3 is output (red LED)
+    TRISDbits.TRISD11 = 0;   //RST_2 D11 is output (red LED)
     TRISDbits.TRISD15 = 0; //D15 is output (Speaker)
     
     setupSpeaker();
     setupSevenSeg();
     setupMic();
+    setupIR();
 }
 
 void setupSpeaker()
@@ -670,37 +679,106 @@ void setupMic()
     ADTRIG0Lbits.TRGSRC0 = 0b00001; // Select software trigger
 }
 
-/*
- * If anyone wants to do analog stick adc. Not neccessary.
-//Analog Stick MISO_2 RC1 AN13
-//Analog Stick MOSI_2 RC2 AN14
-void setupAnalogStick()
-{
-    ANSELCbits.ANSELC1 = 1;
-    ANSELCbits.ANSELC2 = 1;
-    TRISBbits.TRISB14 = 1; //Analog Stick MISO_2 RC1 AN13
-    TRISCbits.TRISC2 = 1; //Analog Stick MOSI_2 RC2 AN14
-   
-    ADCON5Lbits.SHRPWR = 1;
-    while(ADCON5Lbits.SHRRDY == 0);
-    ADCON3Hbits.SHREN = 1;
-    
-    ADMOD0Hbits.SIGN13 = 0;
-    ADMOD0Hbits.DIFF13 = 0;
-    ADMOD0Hbits.SIGN14 = 0;
-    ADMOD0Hbits.DIFF14 = 0;
-    
-    ADIELbits.IE13 = 1;
-    ADIELbits.IE14 = 1;
-    _ADCAN13IF = 0; // clear interrupt flag for AN13
-    _ADCAN13IE = 1; // enable interrupt for AN13
-    _ADCAN14IF = 0; // clear interrupt flag for AN14
-    _ADCAN14IE = 1; // enable interrupt for AN14
-    
-    ADTRIG0Lbits.TRGSRC13 = 0b00001; // Select software trigger
-    ADTRIG0Lbits.TRGSRC14 = 0b00001; // Select software trigger
+int getCommand() 
+{ 
+    switch(command)
+    {
+        case 0x6897:
+            return 0;
+        case 0x30CF:
+            return 1;
+        case 0x18E7: 
+            return 2;
+        case 0x7A85: 
+            return 3;
+        case 0x10EF: 
+            return 4;
+        case 0x38C7: 
+            return 5;
+        case 0x5AA5: 
+            return 6;
+        case 0x42BD: 
+            return 7;
+        case 0x4AB5: 
+            return 8;
+        case 0x52AD: 
+            return 9;
+        default: 
+            return -1;
+
+    }
 }
-*/
+
+void setupIR()
+{
+    // CS_2 is input
+    TRISCbits.TRISC3 = 1;
+    ANSELCbits.ANSELC3 = 0;
+    
+    // Set PORTC3 to be IC1
+    RPINR3bits.ICM1R = 51;
+    
+    CCP1CON1Lbits.T32 = 1; // 32 bit capture
+    CCP1CON1Lbits.CCPMOD = 1; 
+    CCP1CON1Lbits.CCPON = 1; // Turn on capture
+    CCP1CON1Lbits.CCSEL = 1; // Use input
+    CCP1CON2Hbits.ICS = 0;   // I2C1
+    CCP1CON2Hbits.AUXOUT = 3; // Input event capture
+    
+    IEC0bits.CCP1IE = 1;
+    IFS0bits.CCP1IF = 0;
+    IPC1bits.CCP1IP = 7;
+    command = -1;
+}
+
+void checkIR()
+{   
+    if(command != -1)
+        return;
+    
+    int i = 0;
+    while(PORTCbits.RC3 && (i <= 90)) 
+    { 
+        i++; 
+        __delay_us(50); 
+    }
+    if((i > 90) || (i < 40)) 
+        return;
+    
+    int n;
+    for(n = 0; n < 32; ++n)
+    {
+        i = 0;
+        while(!PORTCbits.RC3 && (i <= 23))
+        { 
+            i++; 
+            __delay_us(50); 
+        }
+        
+        if((i > 22) || (i < 4)) 
+            return;
+        
+        i = 0;
+        while(PORTCbits.RC3 && (i <= 45))
+        { 
+            i++; 
+            __delay_us(50); 
+        }
+        
+        if((i > 44) || (i < 8)) 
+            return;
+        
+        if(i > 21) 
+        {
+            command |= 1ul << (31-n);
+        }
+        else
+        {
+            command &= ~(1ul << (31-n));
+        }
+        
+    }
+}
 
 // microphone read (analog)
 void listenMic(void)
@@ -712,15 +790,10 @@ void listenMic(void)
 // Timer1 Interrupt
 void __attribute__((__interrupt__,no_auto_psv)) _T1Interrupt(void)
 {
-    if(display7SEG)
-    {
-        display7SEG = false;
-    }
-    else
-    {
-        listening = 0;
-        timerCheck = 1;
-    }
+
+    display7SEG = false;
+    listening = 0;
+    timerCheck = 1;
     
     T1CONbits.TON = 0;      //turn timer off 
     IFS0bits.T1IF = 0;      
@@ -731,4 +804,10 @@ void __attribute__((interrupt, no_auto_psv)) _ADCAN0Interrupt(void)
 {
     dataAN0 = ADCBUF0; // read conversion result
     _ADCAN0IF = 0; // clear interrupt flag
+}
+
+void __attribute__((interrupt, auto_psv)) _CCP1Interrupt(void)
+{
+    checkIR();
+    IFS0bits.CCP1IF = 0;
 }
