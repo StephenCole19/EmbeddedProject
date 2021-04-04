@@ -416,6 +416,63 @@ void beep(int numBeeps)
     __delay_ms(1500);
 }
 
+void checkIR()
+{   
+    if(command != -1)
+        return;
+    
+    int i = 0;
+    while(PORTCbits.RC3 && (i <= 90)) 
+    { 
+        i++; 
+        __delay_us(50); 
+    }
+    if((i > 90) || (i < 40)) 
+        return;
+    
+    int n;
+    for(n = 0; n < 32; ++n)
+    {
+        i = 0;
+        while(!PORTCbits.RC3 && (i <= 23))
+        { 
+            i++; 
+            __delay_us(50); 
+        }
+        
+        if((i > 22) || (i < 4)) 
+            return;
+        
+        i = 0;
+        while(PORTCbits.RC3 && (i <= 45))
+        { 
+            i++; 
+            __delay_us(50); 
+        }
+        
+        if((i > 44) || (i < 8)) 
+            return;
+        
+        if(i > 21) 
+        {
+            command |= 1ul << (31-n);
+        }
+        else
+        {
+            command &= ~(1ul << (31-n));
+        }
+        
+    }
+}
+
+// microphone read (analog)
+void listenMic(void)
+{
+    ADCON3Lbits.SWCTRG = 1;
+    __delay_ms(100)
+}
+
+
 void enableDP1()
 {
     LATDbits.LATD4 = 0; // DP4 EN 
@@ -729,62 +786,6 @@ void setupIR()
     IFS0bits.CCP1IF = 0;
     IPC1bits.CCP1IP = 7;
     command = -1;
-}
-
-void checkIR()
-{   
-    if(command != -1)
-        return;
-    
-    int i = 0;
-    while(PORTCbits.RC3 && (i <= 90)) 
-    { 
-        i++; 
-        __delay_us(50); 
-    }
-    if((i > 90) || (i < 40)) 
-        return;
-    
-    int n;
-    for(n = 0; n < 32; ++n)
-    {
-        i = 0;
-        while(!PORTCbits.RC3 && (i <= 23))
-        { 
-            i++; 
-            __delay_us(50); 
-        }
-        
-        if((i > 22) || (i < 4)) 
-            return;
-        
-        i = 0;
-        while(PORTCbits.RC3 && (i <= 45))
-        { 
-            i++; 
-            __delay_us(50); 
-        }
-        
-        if((i > 44) || (i < 8)) 
-            return;
-        
-        if(i > 21) 
-        {
-            command |= 1ul << (31-n);
-        }
-        else
-        {
-            command &= ~(1ul << (31-n));
-        }
-        
-    }
-}
-
-// microphone read (analog)
-void listenMic(void)
-{
-    ADCON3Lbits.SWCTRG = 1;
-    __delay_ms(100)
 }
 
 // Timer1 Interrupt
