@@ -93,11 +93,11 @@ Default Scalar Model: Small
 section                    address   length (PC units)   length (bytes) (dec)
 -------                    -------   -----------------   --------------------
 .text                        0x200               0x262           0x393  (915)
-.text                        0x462               0x79a           0xb67  (2919)
-.dinit                       0xbfc                0x26            0x39  (57)
-.init.delay32                0xc22                0x1c            0x2a  (42)
+.text                        0x462               0x754           0xafe  (2814)
+.dinit                       0xbb6                0x26            0x39  (57)
+.init.delay32                0xbdc                0x1c            0x2a  (42)
 
-                 Total "program" memory used (bytes):          0xf5d  (3933) 1%
+                 Total "program" memory used (bytes):          0xef4  (3828) 1%
 
 
 "data" Memory  [Origin = 0x1000, Length = 0x6000]
@@ -138,7 +138,7 @@ External Symbols in Data Memory (by address):
                     0x1012                  _level
                     0x1014                  _listening
                     0x1016                  _firstEvent
-                    0x1018                  _command
+                    0x1018                  _irIn
                     0x101a                  __Randinit
                     0x101c                  __Tls_setup__Randinit
                     0x101e                  __Tls_setup__Randseed
@@ -150,7 +150,6 @@ External Symbols in Data Memory (by name):
                     0x10a4                  __Randseed
                     0x101c                  __Tls_setup__Randinit
                     0x101e                  __Tls_setup__Randseed
-                    0x1018                  _command
                     0x1010                  _currentEvent
                     0x1008                  _dataAN0
                     0x100a                  _dataAN13
@@ -159,6 +158,7 @@ External Symbols in Data Memory (by name):
                     0x1004                  _fail
                     0x1016                  _firstEvent
                     0x1000                  _highScore
+                    0x1018                  _irIn
                     0x1012                  _level
                     0x1014                  _listening
                     0x1002                  _score
@@ -168,51 +168,51 @@ External Symbols in Program Memory (by address):
 
                   0x000200                  __resetPRI
                   0x00023c                  __psv_init
-                  0x000248                  __data_init
                   0x000248                  __data_init_extended
+                  0x000248                  __data_init
                   0x00036e                  __T1Interrupt
                   0x000384                  __ADCAN0Interrupt
                   0x000394                  __CCP1Interrupt
                   0x0003c2                  __DefaultInterrupt
                   0x0003c8                  _rand
-                  0x000456                  ___mulsi3
                   0x000456                  ___mulp32peds3
                   0x000456                  ___mulp32eds3
+                  0x000456                  ___mulsi3
                   0x000462                  _main
                   0x00049c                  _checkEventType
                   0x0004b8                  _setClockBits
                   0x0004e4                  _humanInteractionListener
-                  0x000592                  _currentActionUpdater
-                  0x0005b6                  _successHandler
-                  0x0005d0                  _failureHandler
-                  0x0005de                  _scoreHandler
-                  0x000618                  _highScoreHandler
-                  0x000632                  _updateSevenSeg
-                  0x0007d6                  _beep
-                  0x0007fe                  _enableDP1
-                  0x00080c                  _enableDP2
-                  0x00081a                  _enableDP3
-                  0x000828                  _enableDP4
-                  0x000836                  _setDPbits
-                  0x000852                  _display0
-                  0x000866                  _display1
-                  0x00087a                  _display2
-                  0x00088e                  _display3
-                  0x0008a2                  _display4
-                  0x0008b6                  _display5
-                  0x0008ca                  _display6
-                  0x0008de                  _display7
-                  0x0008f2                  _display8
-                  0x000906                  _display9
-                  0x00091a                  _setup
-                  0x00094c                  _setupSpeaker
-                  0x0009a4                  _setupSevenSeg
-                  0x0009c0                  _setupMic
-                  0x000a2c                  _getCommand
-                  0x000ab4                  _setupIR
-                  0x000af0                  _checkIR
-                  0x000bee                  _listenMic
-                  0x000c22                  ___delay32
+                  0x00058c                  _currentActionUpdater
+                  0x0005b0                  _successHandler
+                  0x0005ca                  _failureHandler
+                  0x0005e4                  _scoreHandler
+                  0x00061e                  _highScoreHandler
+                  0x000638                  _updateSevenSeg
+                  0x0007dc                  _beep
+                  0x000804                  _checkIR
+                  0x000902                  _listenMic
+                  0x000910                  _enableDP1
+                  0x00091e                  _enableDP2
+                  0x00092c                  _enableDP3
+                  0x00093a                  _enableDP4
+                  0x000948                  _setDPbits
+                  0x000964                  _display0
+                  0x000978                  _display1
+                  0x00098c                  _display2
+                  0x0009a0                  _display3
+                  0x0009b4                  _display4
+                  0x0009c8                  _display5
+                  0x0009dc                  _display6
+                  0x0009f0                  _display7
+                  0x000a04                  _display8
+                  0x000a18                  _display9
+                  0x000a2c                  _setup
+                  0x000a5e                  _setupSpeaker
+                  0x000ab6                  _setupSevenSeg
+                  0x000ad2                  _setupMic
+                  0x000b3e                  _getCurrentCommand
+                  0x000b7a                  _setupIR
+                  0x000bdc                  ___delay32
                   0x02bf00                  __FSEC.sec
 
 External Symbols in Program Memory (by name):
@@ -222,7 +222,7 @@ External Symbols in Program Memory (by name):
                   0x0003c2                  __DefaultInterrupt
                   0x02bf00                  __FSEC.sec
                   0x00036e                  __T1Interrupt
-                  0x000c22                  ___delay32
+                  0x000bdc                  ___delay32
                   0x000456                  ___mulp32eds3
                   0x000456                  ___mulp32peds3
                   0x000456                  ___mulsi3
@@ -230,41 +230,41 @@ External Symbols in Program Memory (by name):
                   0x000248                  __data_init_extended
                   0x00023c                  __psv_init
                   0x000200                  __resetPRI
-                  0x0007d6                  _beep
+                  0x0007dc                  _beep
                   0x00049c                  _checkEventType
-                  0x000af0                  _checkIR
-                  0x000592                  _currentActionUpdater
-                  0x000852                  _display0
-                  0x000866                  _display1
-                  0x00087a                  _display2
-                  0x00088e                  _display3
-                  0x0008a2                  _display4
-                  0x0008b6                  _display5
-                  0x0008ca                  _display6
-                  0x0008de                  _display7
-                  0x0008f2                  _display8
-                  0x000906                  _display9
-                  0x0007fe                  _enableDP1
-                  0x00080c                  _enableDP2
-                  0x00081a                  _enableDP3
-                  0x000828                  _enableDP4
-                  0x0005d0                  _failureHandler
-                  0x000a2c                  _getCommand
-                  0x000618                  _highScoreHandler
+                  0x000804                  _checkIR
+                  0x00058c                  _currentActionUpdater
+                  0x000964                  _display0
+                  0x000978                  _display1
+                  0x00098c                  _display2
+                  0x0009a0                  _display3
+                  0x0009b4                  _display4
+                  0x0009c8                  _display5
+                  0x0009dc                  _display6
+                  0x0009f0                  _display7
+                  0x000a04                  _display8
+                  0x000a18                  _display9
+                  0x000910                  _enableDP1
+                  0x00091e                  _enableDP2
+                  0x00092c                  _enableDP3
+                  0x00093a                  _enableDP4
+                  0x0005ca                  _failureHandler
+                  0x000b3e                  _getCurrentCommand
+                  0x00061e                  _highScoreHandler
                   0x0004e4                  _humanInteractionListener
-                  0x000bee                  _listenMic
+                  0x000902                  _listenMic
                   0x000462                  _main
                   0x0003c8                  _rand
-                  0x0005de                  _scoreHandler
+                  0x0005e4                  _scoreHandler
                   0x0004b8                  _setClockBits
-                  0x000836                  _setDPbits
-                  0x00091a                  _setup
-                  0x000ab4                  _setupIR
-                  0x0009c0                  _setupMic
-                  0x0009a4                  _setupSevenSeg
-                  0x00094c                  _setupSpeaker
-                  0x0005b6                  _successHandler
-                  0x000632                  _updateSevenSeg
+                  0x000948                  _setDPbits
+                  0x000a2c                  _setup
+                  0x000b7a                  _setupIR
+                  0x000ad2                  _setupMic
+                  0x000ab6                  _setupSevenSeg
+                  0x000a5e                  _setupSpeaker
+                  0x0005b0                  _successHandler
+                  0x000638                  _updateSevenSeg
 
 Memory Configuration
 
@@ -423,26 +423,26 @@ __FBTSEQ
 .comment
  *(.comment)
 
-.debug_info       0x000000       0x4508
+.debug_info       0x000000       0x44f7
  *(.debug_info)
- .debug_info      0x000000       0x4508 build/default/production/main.o
+ .debug_info      0x000000       0x44f7 build/default/production/main.o
  *(.gnu.linkonce.wi.*)
 
-.debug_abbrev     0x000000        0x2c8
+.debug_abbrev     0x000000        0x2d9
  *(.debug_abbrev)
- .debug_abbrev    0x000000        0x2c8 build/default/production/main.o
+ .debug_abbrev    0x000000        0x2d9 build/default/production/main.o
 
-.debug_line       0x000000        0x2f6
+.debug_line       0x000000        0x2f1
  *(.debug_line)
- .debug_line      0x000000        0x2f6 build/default/production/main.o
+ .debug_line      0x000000        0x2f1 build/default/production/main.o
 
 .debug_frame      0x000000        0x416
  *(.debug_frame)
  .debug_frame     0x000000        0x416 build/default/production/main.o
 
-.debug_str        0x000000        0x368
+.debug_str        0x000000        0x36f
  *(.debug_str)
- .debug_str       0x000000        0x368 build/default/production/main.o
+ .debug_str       0x000000        0x36f build/default/production/main.o
 
 .debug_loc
  *(.debug_loc)
@@ -451,10 +451,10 @@ __FBTSEQ
  *(.debug_macinfo)
 
 .debug_pubnames
-                  0x000000        0x2f7
+                  0x000000        0x2fb
  *(.debug_pubnames)
  .debug_pubnames
-                  0x000000        0x2f7 build/default/production/main.o
+                  0x000000        0x2fb build/default/production/main.o
 
 .debug_ranges
  *(.debug_ranges)
@@ -4009,7 +4009,7 @@ __c30_signature
                     0x1012                  _level
                     0x1014                  _listening
                     0x1016                  _firstEvent
-                    0x1018                  _command
+                    0x1018                  _irIn
 
 .bss                0x101a         0x8a
  .bss               0x101a         0x8a c:/program files/microchip/xc16/v1.70/bin/bin/../../lib\liblega-c-elf.a(rand.CH_eo)
@@ -4094,46 +4094,46 @@ __c30_signature
  .ivt._CCP1Interrupt
                   0x000020          0x2 build/default/production/main.o
 
-.text             0x000462        0x79a
- .text            0x000462        0x79a build/default/production/main.o
+.text             0x000462        0x754
+ .text            0x000462        0x754 build/default/production/main.o
                   0x000462                  _main
                   0x00049c                  _checkEventType
                   0x0004b8                  _setClockBits
                   0x0004e4                  _humanInteractionListener
-                  0x000592                  _currentActionUpdater
-                  0x0005b6                  _successHandler
-                  0x0005d0                  _failureHandler
-                  0x0005de                  _scoreHandler
-                  0x000618                  _highScoreHandler
-                  0x000632                  _updateSevenSeg
-                  0x0007d6                  _beep
-                  0x0007fe                  _enableDP1
-                  0x00080c                  _enableDP2
-                  0x00081a                  _enableDP3
-                  0x000828                  _enableDP4
-                  0x000836                  _setDPbits
-                  0x000852                  _display0
-                  0x000866                  _display1
-                  0x00087a                  _display2
-                  0x00088e                  _display3
-                  0x0008a2                  _display4
-                  0x0008b6                  _display5
-                  0x0008ca                  _display6
-                  0x0008de                  _display7
-                  0x0008f2                  _display8
-                  0x000906                  _display9
-                  0x00091a                  _setup
-                  0x00094c                  _setupSpeaker
-                  0x0009a4                  _setupSevenSeg
-                  0x0009c0                  _setupMic
-                  0x000a2c                  _getCommand
-                  0x000ab4                  _setupIR
-                  0x000af0                  _checkIR
-                  0x000bee                  _listenMic
+                  0x00058c                  _currentActionUpdater
+                  0x0005b0                  _successHandler
+                  0x0005ca                  _failureHandler
+                  0x0005e4                  _scoreHandler
+                  0x00061e                  _highScoreHandler
+                  0x000638                  _updateSevenSeg
+                  0x0007dc                  _beep
+                  0x000804                  _checkIR
+                  0x000902                  _listenMic
+                  0x000910                  _enableDP1
+                  0x00091e                  _enableDP2
+                  0x00092c                  _enableDP3
+                  0x00093a                  _enableDP4
+                  0x000948                  _setDPbits
+                  0x000964                  _display0
+                  0x000978                  _display1
+                  0x00098c                  _display2
+                  0x0009a0                  _display3
+                  0x0009b4                  _display4
+                  0x0009c8                  _display5
+                  0x0009dc                  _display6
+                  0x0009f0                  _display7
+                  0x000a04                  _display8
+                  0x000a18                  _display9
+                  0x000a2c                  _setup
+                  0x000a5e                  _setupSpeaker
+                  0x000ab6                  _setupSevenSeg
+                  0x000ad2                  _setupMic
+                  0x000b3e                  _getCurrentCommand
+                  0x000b7a                  _setupIR
 
-.dinit            0x000bfc         0x26
- .dinit           0x000bfc         0x26 data_init
+.dinit            0x000bb6         0x26
+ .dinit           0x000bb6         0x26 data_init
 
-.init.delay32     0x000c22         0x1c
- .init.delay32    0x000c22         0x1c c:/program files/microchip/xc16/v1.70/bin/bin/../../lib\liblega-pic30-elf.a(delay32ch.Leo)
-                  0x000c22                  ___delay32
+.init.delay32     0x000bdc         0x1c
+ .init.delay32    0x000bdc         0x1c c:/program files/microchip/xc16/v1.70/bin/bin/../../lib\liblega-pic30-elf.a(delay32ch.Leo)
+                  0x000bdc                  ___delay32
