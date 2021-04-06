@@ -129,7 +129,7 @@ int dataAN0;
 int dataAN13;
 int dataAN14;
 int timerCheck = 0;
-int command = -1;
+int irIn = -1;
 
 
 int main(void) 
@@ -159,7 +159,7 @@ int main(void)
             
             //turn off all outputs
             LATBbits.LATB2 = 0;     //Turn off green LED
-            LATCbits.LATC3 = 0;     //Turn off red LED
+            LATDbits.LATD11 = 0;     //Turn off red LED
         }
     }
 
@@ -228,22 +228,20 @@ void humanInteractionListener()
             result = checkEventType(3); 
         }
         
-        if(getCommand() != -1)
+        if(getCurrentCommand() != -1)
         {
             listening = 0;
-            command = -1;
+            irIn = -1;
             result = checkEventType(4);
         }
     }
     
-    if(result == 0)
-    {
-        failureHandler();
-    }
-    else if (result == 1 && timerCheck == 0)
+    if (result == 1 && timerCheck == 0)
     {
         successHandler();
     }
+    else
+        failureHandler();
 }
 
 // updates the global variable currentEvent when called
@@ -270,7 +268,10 @@ void successHandler()
 
 void failureHandler()
 {
-    LATCbits.LATC3 = 1;     //Turn on red LED
+    LATDbits.LATD11 = 1;     //Turn on red LED
+    __delay_ms(500);
+    LATDbits.LATD11 = 0;     //Turn off red LED
+    firstEvent = 1;
     scoreHandler(0);
 }
 
@@ -418,7 +419,7 @@ void beep(int numBeeps)
 
 void checkIR()
 {   
-    if(command != -1)
+    if(irIn != -1)
         return;
     
     int i = 0;
@@ -454,14 +455,9 @@ void checkIR()
             return;
         
         if(i > 21) 
-        {
-            command |= 1ul << (31-n);
-        }
+            irIn |= 1ul << (31-n);
         else
-        {
-            command &= ~(1ul << (31-n));
-        }
-        
+            irIn &= ~(1ul << (31-n));
     }
 }
 
@@ -736,9 +732,9 @@ void setupMic()
     ADTRIG0Lbits.TRGSRC0 = 0b00001; // Select software trigger
 }
 
-int getCommand() 
+int getCurrentCommand() 
 { 
-    switch(command)
+    switch(irIn)
     {
         case 0x6897:
             return 0;
@@ -748,18 +744,6 @@ int getCommand()
             return 2;
         case 0x7A85: 
             return 3;
-        case 0x10EF: 
-            return 4;
-        case 0x38C7: 
-            return 5;
-        case 0x5AA5: 
-            return 6;
-        case 0x42BD: 
-            return 7;
-        case 0x4AB5: 
-            return 8;
-        case 0x52AD: 
-            return 9;
         default: 
             return -1;
 
@@ -768,24 +752,23 @@ int getCommand()
 
 void setupIR()
 {
-    // CS_2 is input
     TRISCbits.TRISC3 = 1;
     ANSELCbits.ANSELC3 = 0;
     
-    // Set PORTC3 to be IC1
+    // use RC3 for IC1
     RPINR3bits.ICM1R = 51;
     
-    CCP1CON1Lbits.T32 = 1; // 32 bit capture
+    CCP1CON1Lbits.T32 = 1; // capture 32 bits
     CCP1CON1Lbits.CCPMOD = 1; 
-    CCP1CON1Lbits.CCPON = 1; // Turn on capture
+    CCP1CON1Lbits.CCPON = 1; // start capture
     CCP1CON1Lbits.CCSEL = 1; // Use input
     CCP1CON2Hbits.ICS = 0;   // I2C1
-    CCP1CON2Hbits.AUXOUT = 3; // Input event capture
+    CCP1CON2Hbits.AUXOUT = 3; // set event capture
     
     IEC0bits.CCP1IE = 1;
     IFS0bits.CCP1IF = 0;
     IPC1bits.CCP1IP = 7;
-    command = -1;
+    irIn = -1;
 }
 
 // Timer1 Interrupt
