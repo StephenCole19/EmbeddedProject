@@ -94,11 +94,12 @@
 
 
 //Green LED     CS_1
-//Red LED       CS_2
+//Red LED       RST_2
 //Push Button   INT_1
 //ON OFF  INT_2 XXX
-//Analog Stick MISO_2 RC1 AN13
-//Analog Stick MOSI_2 RC2 AN14
+//Analog stick (x) RX_2 (B14)
+//Analog stick (y) TX_2 (B13)
+
 
 /*
  * 7SEG 
@@ -635,11 +636,11 @@ void setup()
     IFS0bits.T1IF = 0;
     
     //inputs
-    TRISBbits.TRISB15 = 1;  //AN_2 D10 is input (on/off switch)
-    TRISCbits.TRISC14 = 1; //C14 is input (pushbutton)
+    TRISBbits.TRISB15 = 1;  // INT_2 is input (on/off switch)
+    TRISCbits.TRISC14 = 1; //INT_1 is input (pushbutton)
     TRISBbits.TRISB14 = 1; //Analog Stick RB14 RX_2
     TRISBbits.TRISB13 = 1; //Analog Stick RB13 TX_2
-    
+     
     //outputs
     TRISBbits.TRISB2 = 0;   //B2 is output (green LED)
     TRISDbits.TRISD11 = 0;   //RST_2 D11 is output (red LED)
