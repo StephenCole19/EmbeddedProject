@@ -155,6 +155,7 @@ int main(void)
         }
         else {                      //if switch is off
             scoreHandler(0);        //reset score
+            setDPbits();
             level = 1;              //reset level
             firstEvent = 1;         //reset first event
             
