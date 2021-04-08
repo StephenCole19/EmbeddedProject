@@ -262,7 +262,7 @@ void successHandler()
     T1CONbits.TON = 0; //reset clock
     scoreHandler(1);
     LATBbits.LATB2 = 1;     //Turn on green LED
-    __delay_ms(10);
+    __delay_ms(500);
     LATBbits.LATB2 = 0;     //Turn off green LED
     currentActionUpdater();
 }
