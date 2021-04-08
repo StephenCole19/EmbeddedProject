@@ -281,12 +281,14 @@ void scoreHandler(int result)
     if(result == 1)
     {
         score++;
+        highScoreHandler(score);
         if(score % 5 == 0)
         {
             level++;
         }
         //Increment and keep going
         //Every 5 levels speedup
+        
     }
     else if(result == 0)
     {
@@ -301,8 +303,8 @@ void highScoreHandler(int score)
     if(score > highScore)
     {
         highScore = score;
-        updateSevenSeg(highScore);
     }
+    updateSevenSeg(highScore);
 }
 
 // Call updateSevenSeg with new number to display on 7SEG
