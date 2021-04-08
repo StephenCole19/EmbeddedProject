@@ -154,10 +154,10 @@ int main(void)
             humanInteractionListener();     // listen for user input
         }
         else {                      //if switch is off
-            scoreHandler(0);        //reset score
-            setDPbits();
+            scoreHandler(0);        //reset score      
             level = 1;              //reset level
             firstEvent = 1;         //reset first event
+            highScore = 0;          //reset highScore
             
             //turn off all outputs
             LATBbits.LATB2 = 0;     //Turn off green LED
@@ -275,6 +275,8 @@ void failureHandler()
     LATDbits.LATD11 = 0;     //Turn off red LED
     firstEvent = 1;
     scoreHandler(0);
+    updateSevenSeg(highScore);
+    score = 0;
 }
 
 void scoreHandler(int result)
@@ -293,7 +295,6 @@ void scoreHandler(int result)
     else if(result == 0)
     {
         highScoreHandler(score);
-        score = 0;
         //Reset score and tell game to stop
     }
 }
@@ -304,7 +305,6 @@ void highScoreHandler(int score)
     {
         highScore = score;
     }
-    updateSevenSeg(highScore);
 }
 
 // Call updateSevenSeg with new number to display on 7SEG
@@ -365,6 +365,7 @@ void updateSevenSeg(int newScore)
             display8();
         else if(currentDigit == 9)
             display9();
+        
         
         if(i == 0)
         {
