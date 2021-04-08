@@ -281,7 +281,6 @@ void scoreHandler(int result)
     if(result == 1)
     {
         score++;
-        highScoreHandler(score);
         if(score % 5 == 0)
         {
             level++;
